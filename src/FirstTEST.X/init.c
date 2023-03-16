@@ -58,26 +58,40 @@ void initialize_HW(void){
     OSCTUNbits.TUN = 0b111100;
 	
 // Pin functions --------------------------------------------------------
-// 1. Analog / digital:
-	ANSBbits.ANSB2 = 0;		// RB2 = signal "ON" - digital
+// 1. Analog / digital: (0 - Digital | 1 = Analog)
+
+    // PORT B
+	ANSBbits.ANSB2 = 0;
     ANSBbits.ANSB7 = 0; 
+    // PORT D
     ANSDbits.ANSD8 = 0;
 	
-// 2. Digital Input / Output:
-	TRISBbits.TRISB2 = 0;	// "ON" = output
-    TRISBbits.TRISB7 = 1; // input
+// 2. Digital Input / Output: (0 - Output | 1 - Input)
+
+    // PORT B
+	TRISBbits.TRISB2 = 0;
+    TRISBbits.TRISB7 = 1;
+    // PORT C
     TRISCbits.TRISC12 = 0;
     TRISCbits.TRISC15 = 0;
-    TRISDbits.TRISD8 = 1; // input
+    // PORT D
+    TRISDbits.TRISD8 = 1;
     
-// 3. Output level on digital pins:
-	LATBbits.LATB2 = 0;
-    LATCbits.LATC12 = 1;
-    LATCbits.LATC15 = 1;
+// 3. Output level on digital pins: (1 - High | 0 = Low)
 
-// 4. Open drain settings:
-	ODCBbits.ODB2 = 1;					// open drain on "ON"
+    // PORT B
+	LATBbits.LATB2 = 0; // Alternative -- PORTBbits.RB2 = 0;
+    // PORT C
+    LATCbits.LATC12 = 1; // Alternative -- PORTCbits.RC12 = 1;
+    LATCbits.LATC15 = 1;
+    
+
+// 4. Open drain settings: (1 - Open Drain | 0 - Push/Pull)
+
+    // PORT B
+	ODCBbits.ODB2 = 1;
     ODCBbits.ODB7 = 0;
+    // PORT C
     ODCCbits.ODC12 = 0;
 
 	

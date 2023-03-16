@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "xc.h": "c"
+        "xc.h": "c",
+        "p24fj128gc006.h": "c"
     }
 }

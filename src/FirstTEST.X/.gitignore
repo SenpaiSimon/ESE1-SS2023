@@ -19,11 +19,9 @@ nbdist/
 nbactions.xml
 nb-configuration.xml
 funclist
-nbproject/Makefile-*
+# nbproject/Makefile-*
 disassembly/
 *.map
-
-nbproject
 
 # SVN Stuff, even tho it is not used for this project
 version.h
