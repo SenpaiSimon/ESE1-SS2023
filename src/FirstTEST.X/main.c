@@ -12,7 +12,7 @@ int main(void)
 	// main loop:
 	while(1)
 	{
-        if(!PORTBbits.RB7) {
+        if(!PORTBbits.RB3) { // was RB7 -- Key1 -- now its key3
             PORTCbits.RC12 = !PORTCbits.RC12;
         }
         if(!PORTDbits.RD8) {

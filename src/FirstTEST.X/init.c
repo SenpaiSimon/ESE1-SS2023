@@ -61,6 +61,7 @@ void initGPIO(void) {
     // PORT B
     ANSBbits.ANSB2 = 0;
     ANSBbits.ANSB7 = 0; 
+    ANSBbits.ANSB3 = 0;
     // PORT D
     ANSDbits.ANSD8 = 0;
 
@@ -69,6 +70,7 @@ void initGPIO(void) {
     // PORT B
     TRISBbits.TRISB2 = 0;
     TRISBbits.TRISB7 = 1;
+    TRISBbits.TRISB3 = 1;
     // PORT C
     TRISCbits.TRISC12 = 0;
     TRISCbits.TRISC15 = 0;
@@ -91,6 +93,12 @@ void initGPIO(void) {
     ODCBbits.ODB7 = 0;
     // PORT C
     ODCCbits.ODC12 = 0;
+
+
+    // 5. Pull UP/Pull Down
+    
+    // PORT B
+    CNPU1bits.CN5PUE = 1;
 }
 
 void initCLOCK(void) {
