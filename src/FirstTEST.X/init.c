@@ -53,7 +53,44 @@ void initGPIO(void);
 
 void initCLOCK(void);
 
+void initTIMERS(void);
+
 // Declarations
+
+void initTIMERS(void) {
+    // TIMER1 -----------------------------------------------------------------------------
+
+    /*
+     * We want the counter to reset in 1Hz intervals
+     * --> clock source for the timer is at 16Mhz
+     * --> 16Mhz/1Hz = 16.000.000 -- or in other words this is FOSC/2
+     * --> split this value up in PreScaler and Auto Reload value 
+     * --> with prescaler of 256 we have 62500 left for auto reloading
+     * --> this is okay since the timer is 16bit and the max number it can display is 65535
+     */
+    T1CONbits.TCKPS = 0b11; // prescaler 256
+    PR1 = 62500; // auto reload register
+    
+    // Start Timer
+    T1CONbits.TON = 1;
+
+
+    // TIMER2 -----------------------------------------------------------------------------
+
+    // switch the timer to 32 bit mode
+    T2CONbits.T32 = 1;
+
+    // same calculation but with 0.5Hz instead of 1Hz
+    T2CONbits.TCKPS = 0b11;
+    PR2 = 125000;
+
+    // enable interrupts on this timer
+    _T3IE = 1; // needs to be timer 3! because timeer 2 in 32 bit mode sets ir flag on timer 3
+
+    // timer start
+    T2CONbits.TON = 1;
+}
+
 void initGPIO(void) {
     // Pin functions --------------------------------------------------------
     // 1. Analog / digital: (0 - Digital | 1 = Analog)
@@ -113,6 +150,8 @@ void initCLOCK(void) {
 
 void initialize_HW(void){
     initCLOCK();
+
+    initTIMERS();
 
 	initGPIO();
 }	
