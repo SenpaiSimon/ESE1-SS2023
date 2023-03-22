@@ -47,52 +47,64 @@
 #pragma config JTAGEN = OFF             // JTAG Port Enable (Disabled)
 
 //==========================================================================================
-void initialize_HW(void){
-	
-// Oscillator Configuration----------------------------------------------
-// setting F_cy = Fosc/2 = 16MHz:
-	CLKDIVbits.RCDIV = 1;			// divide by 2 (actually default)
-	CLKDIVbits.CPDIV = 0;			// no division Clock=32MHz (default) 
-    
-    // Clock tuning to get nice 16 Mhz
-    OSCTUNbits.TUN = 0b111100;
-	
-// Pin functions --------------------------------------------------------
-// 1. Analog / digital: (0 - Digital | 1 = Analog)
+
+// Prototypes
+void initGPIO(void);
+
+void initCLOCK(void);
+
+// Declarations
+void initGPIO(void) {
+    // Pin functions --------------------------------------------------------
+    // 1. Analog / digital: (0 - Digital | 1 = Analog)
 
     // PORT B
-	ANSBbits.ANSB2 = 0;
+    ANSBbits.ANSB2 = 0;
     ANSBbits.ANSB7 = 0; 
     // PORT D
     ANSDbits.ANSD8 = 0;
-	
-// 2. Digital Input / Output: (0 - Output | 1 - Input)
+
+    // 2. Digital Input / Output: (0 - Output | 1 - Input)
 
     // PORT B
-	TRISBbits.TRISB2 = 0;
+    TRISBbits.TRISB2 = 0;
     TRISBbits.TRISB7 = 1;
     // PORT C
     TRISCbits.TRISC12 = 0;
     TRISCbits.TRISC15 = 0;
     // PORT D
     TRISDbits.TRISD8 = 1;
-    
-// 3. Output level on digital pins: (1 - High | 0 = Low)
+
+    // 3. Output level on digital pins: (1 - High | 0 = Low)
 
     // PORT B
-	LATBbits.LATB2 = 0; // Alternative -- PORTBbits.RB2 = 0;
+    LATBbits.LATB2 = 0; // Alternative -- PORTBbits.RB2 = 0;
     // PORT C
     LATCbits.LATC12 = 1; // Alternative -- PORTCbits.RC12 = 1;
     LATCbits.LATC15 = 1;
-    
 
-// 4. Open drain settings: (1 - Open Drain | 0 - Push/Pull)
+
+    // 4. Open drain settings: (1 - Open Drain | 0 - Push/Pull)
 
     // PORT B
-	ODCBbits.ODB2 = 1;
+    ODCBbits.ODB2 = 1;
     ODCBbits.ODB7 = 0;
     // PORT C
     ODCCbits.ODC12 = 0;
+}
 
-	
+void initCLOCK(void) {
+    // Oscillator Configuration----------------------------------------------
+    // setting F_cy = Fosc/2 = 16MHz:
+	CLKDIVbits.RCDIV = 1;			// divide by 2 (actually default)
+	CLKDIVbits.CPDIV = 0;			// no division Clock=32MHz (default) 
+    
+    // Clock tuning to get nice 16 Mhz
+    OSCTUNbits.TUN = 0b111100;	
+}
+
+void initialize_HW(void){
+    initCLOCK();
+
+	initGPIO();
 }	

@@ -49,6 +49,9 @@ CP=cp
 CCADMIN=CCadmin
 RANLIB=ranlib
 
+# default build
+comp:
+	@make -f nbproject/Makefile-default.mk SUBPROJECTS= .build-conf
 
 # build
 build: .build-post
