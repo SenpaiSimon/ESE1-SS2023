@@ -69,7 +69,7 @@ void initTIMERS(void) {
      * --> this is okay since the timer is 16bit and the max number it can display is 65535
      */
     T1CONbits.TCKPS = 0b11; // prescaler 256
-    PR1 = 62500; // auto reload register
+    PR1 = 31250; // auto reload register --> divide this by 2 because we toogle at every event
     
     // Start Timer
     T1CONbits.TON = 1;
@@ -77,18 +77,28 @@ void initTIMERS(void) {
 
     // TIMER2 -----------------------------------------------------------------------------
 
-    // switch the timer to 32 bit mode
-    T2CONbits.T32 = 1;
-
     // same calculation but with 0.5Hz instead of 1Hz
+    T2CONbits.T32 = 0;
     T2CONbits.TCKPS = 0b11;
-    PR2 = 125000;
+    PR2 = 62500;
 
     // enable interrupts on this timer
-    _T3IE = 1; // needs to be timer 3! because timeer 2 in 32 bit mode sets ir flag on timer 3
+    _T2IE = 1; // needs to be timer 3! because timer 2 in 32 bit mode sets ir flag on timer 3
 
     // timer start
     T2CONbits.TON = 1;
+
+
+    // TIMER 4 -----------------------------------------------------------------------------
+    uint32_t delay_in_ms = 200;
+
+    T4CONbits.T45 = 0;
+    T4CONbits.TCKPS = 0b11; // 256
+    //      Clock            1/T              Prescaler
+    PR4 = (uint16_t)((16000000 / (1/(delay_in_ms/1000.0))) / 256.0);
+    _T4IE = 1;
+
+    T4CONbits.TON = 1;
 }
 
 void initGPIO(void) {
@@ -134,8 +144,15 @@ void initGPIO(void) {
 
     // 5. Pull UP/Pull Down
     
-    // PORT B
-    CNPU1bits.CN5PUE = 1;
+    // KEY 1 - 18 / RB7 / CN25
+    _CN25IE = 1;
+
+    // KEY 2 - 42 / RD8 / CN53
+    _CN53IE = 1;
+
+    // KEY 3 - 13 / RB3 / CN5
+    CNPU1bits.CN5PUE = 1; // pull up
+    _CN5IE = 1;
 }
 
 void initCLOCK(void) {
