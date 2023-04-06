@@ -8,10 +8,23 @@
 // GLOBALS
 uint8_t buttonAllow = 1;
 
+UNITS_t lcdUnits = {0};
+UNITS_t allLCDUnitsON = {
+    .mbar = 1,
+    .torr = 1,
+    .pa = 1,
+    .percent = 1,
+    .m_s = 1,
+    .celcius = 1,
+    .fahrenheit = 1,
+    .l_min = 1
+};
+
 // ISR
 void _ISR _T2Interrupt(void) {
     _T2IF = 0; // reset IR flag
 
+    COLON = !COLON;
 }
 
 void _ISR _T4Interrupt(void) {
@@ -48,6 +61,12 @@ void K2_Callback(void) {
 int main(void)
 {
 	initialize_HW();
+
+    setDigits(8, 8, 8, 8);
+    setPoints(true, true, true, true);
+    setLowerScript(true, true, true, true, true);
+    setSigns(true, true, true);
+    setUnits(&allLCDUnitsON);
 	
 	// main loop:
 	while(1)

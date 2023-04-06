@@ -6,6 +6,8 @@
                    projectFiles="true">
       <itemPath>main.h</itemPath>
       <itemPath>LCD_Driver/LCD_Driver.h</itemPath>
+      <itemPath>LCD_Driver/LCD_MAP.h</itemPath>
+      <itemPath>LCD_Driver/LCD_Typedef.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -203,6 +205,9 @@
       <PICkit3PlatformTool>
         <property key="firmware.download.all" value="false"/>
       </PICkit3PlatformTool>
+      <Tool>
+        <property key="firmware.download.all" value="false"/>
+      </Tool>
     </conf>
   </confs>
 </configurationDescriptor>

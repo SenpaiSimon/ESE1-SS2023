@@ -16,7 +16,8 @@
             ],
             "intelliSenseMode": "gcc-x64",
             "cStandard": "c99",
-            "compilerPath": "${env:XC16_PATH}\\xc16-gcc.exe"
+            "compilerPath": "${env:XC16_PATH}\\xc16-gcc.exe",
+            "configurationProvider": "ms-vscode.makefile-tools"
         }
     ],
     "version": 4

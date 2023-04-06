@@ -12,8 +12,18 @@
 extern "C" {
 #endif
 
+#include <xc.h> // so we can access all registers and stuff
+#include <stdbool.h>
 
+#include "LCD_MAP.h"
+#include "LCD_Typedef.h"
 
+void updateLCD();
+void setDigits(uint8_t d1, uint8_t d2, uint8_t d3, uint8_t d4);
+void setPoints(bool d1, bool d2, bool d3, bool col);
+void setLowerScript(bool bat, bool sp1, bool sp2, bool sp3, bool sp4);
+void setSigns(bool up, bool down, bool minus);
+void setUnits(UNITS_t *units);
 
 #ifdef	__cplusplus
 }
