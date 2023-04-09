@@ -120,7 +120,19 @@ void updateLCD() {
     L_MIN = currentState->units.l_min | currentState->units.l;
     SEP_MIN = currentState->units.l_min;
     MIN = currentState->units.l_min | currentState->units.min;
+}
 
+void setTime(uint32_t secondsPassed) {
+    uint32_t localSeconds = secondsPassed;
+    uint32_t minutes, hours;
+
+    // extract hours and seconds
+    hours = localSeconds / 3600;
+    localSeconds -= hours * 3600;
+    minutes = localSeconds / 60;
+
+    // convert it to a standalone number
+    setNumber((hours * 100) + minutes);
 }
 
 void setNumber(uint32_t number) {

@@ -69,7 +69,11 @@ void initTIMERS(void) {
      * --> this is okay since the timer is 16bit and the max number it can display is 65535
      */
     T1CONbits.TCKPS = 0b11; // prescaler 256
-    PR1 = 31250; // auto reload register --> divide this by 2 because we toogle at every event
+    // PR1 = 31250; // auto reload register --> divide this by 2 because we toogle at every event
+    PR1 = 62500;
+
+    // interrupts enabled
+    _T1IE = 1;
     
     // Start Timer
     T1CONbits.TON = 1;
