@@ -9,6 +9,8 @@ void _ISR _T4Interrupt(void);
 
 void _ISR _CNInterrupt(void);
 
+void K1_Callback(void);
+
 void K2_Callback(void);
 
 void K3_Callback(void);

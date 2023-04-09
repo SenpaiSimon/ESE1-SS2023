@@ -55,8 +55,6 @@ void initCLOCK(void);
 
 void initTIMERS(void);
 
-void initLCD(void);
-
 // Declarations
 
 void initTIMERS(void) {
@@ -167,52 +165,10 @@ void initCLOCK(void) {
     OSCTUNbits.TUN = 0b111100;	
 }
 
-void initLCD(void) {
-    // config
-    LCDCONbits.LCDEN    = 1; // enbable the driver
-    LCDCONbits.CS       = 0b00; // clock is FRC
-    LCDCONbits.LMUX     = 0b011; // 1/4 Mux --> COM3 - COM0
-
-    LCDPSbits.WFT       = 0; // waveform A
-    LCDPSbits.LP        = 0b0011; // prescaler 1:4
-
-    LCDREFbits.LCDIRE   = 1; // enable reistor ladder
-    LCDREFbits.LCDCST   = 0b0; // maximum contrast
-    LCDREFbits.LRLBP    = 0b11; // high power mode for mode B
-    LCDREFbits.LRLAT    = 0b0; // always in mode B
-
-    // select outputs pins enable
-    // uC PIN          - PANEL PIN
-    LCDSE0bits.SE14 = 1; // pin18
-    LCDSE0bits.SE15 = 1; // pin17
-    LCDSE1bits.SE16 = 1; // pin16
-    LCDSE1bits.SE17 = 1; // pin15
-    LCDSE1bits.SE20 = 1; // pin14
-    LCDSE1bits.SE21 = 1; // pin13
-    LCDSE1bits.SE22 = 1; // pin12
-    LCDSE1bits.SE23 = 1; // pin11
-    LCDSE1bits.SE24 = 1; // pin10
-    LCDSE1bits.SE25 = 1; // pin9
-    LCDSE1bits.SE26 = 1; // pin8
-    LCDSE1bits.SE27 = 1; // pin7
-    LCDSE2bits.SE47 = 1; // pin6
-    LCDSE3bits.SE62 = 1; // pin5
-
-    // NOTE
-    // PANEL COM - uC COM
-    // COM1      - COM3
-    // COM2      - COM2
-    // COM3      - COM0
-    // COM4      - COM1
-}
-
-
 void initialize_HW(void){
     initCLOCK();
 
     initTIMERS();
 
 	initGPIO();
-
-    initLCD();
 }	

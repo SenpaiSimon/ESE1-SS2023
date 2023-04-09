@@ -8,28 +8,20 @@
 // GLOBALS
 uint8_t buttonAllow = 1;
 
-UNITS_t lcdUnits = {0};
-UNITS_t allLCDUnitsON = {
-    .mbar = 1,
-    .torr = 1,
-    .pa = 1,
-    .percent = 1,
-    .m_s = 1,
-    .celcius = 1,
-    .fahrenheit = 1,
-    .l_min = 1
-};
+LCD_STATE_t lcdState;
 
-// ISR
+// colon blinking 0.5 Hz
 void _ISR _T2Interrupt(void) {
     _T2IF = 0; // reset IR flag
 
-    COLON = !COLON;
+    lcdState.dots.col = !lcdState.dots.col;
+    COLON = lcdState.dots.col;
 }
 
+// de-bounce button
 void _ISR _T4Interrupt(void) {
     _T4IF = 0;
-    if(PORTBbits.RB3 && PORTDbits.RD8) {
+    if(PORTBbits.RB3 && PORTDbits.RD8 && PORTBbits.RB7) {
         buttonAllow = 1;
     }
 }
@@ -38,6 +30,7 @@ void _ISR _CNInterrupt(void) {
     
 }
 
+// k3 button action
 void K3_Callback(void) {
     // action
     LCDDATA1bits.S23C0 = !LCDDATA1bits.S23C0;
@@ -47,12 +40,25 @@ void K3_Callback(void) {
     buttonAllow = 0;
 }
 
+// k2 button action
 void K2_Callback(void) {
     // action
-    PORTCbits.RC15 = !PORTCbits.RC15;
-
+    // decrement number
+    lcdState.number--;
+    setNumber(lcdState.number);
 
     // meta
+    TMR4 = 0;
+    buttonAllow = 0;
+}
+
+void K1_Callback(void) {
+    // action
+    // increment number
+    lcdState.number++;
+    setNumber(lcdState.number);
+
+    // meta 
     TMR4 = 0;
     buttonAllow = 0;
 }
@@ -61,12 +67,9 @@ void K2_Callback(void) {
 int main(void)
 {
 	initialize_HW();
+    initLCD(&lcdState);
 
-    setDigits(8, 8, 8, 8);
-    setPoints(true, true, true, true);
-    setLowerScript(true, true, true, true, true);
-    setSigns(true, true, true);
-    setUnits(&allLCDUnitsON);
+    displayTest(1);
 	
 	// main loop:
 	while(1)
@@ -77,7 +80,11 @@ int main(void)
 
         if(!PORTDbits.RD8 && buttonAllow) {
             K2_Callback();
-        }           
+        }   
+
+        if(!PORTBbits.RB7 && buttonAllow) {
+            K1_Callback();
+        }        
 	}
 
     return 0;	
