@@ -50,7 +50,7 @@ void _ISR _CNInterrupt(void) {
 // k3 button action
 void K3_Callback(void) {
     // action
-    timePassed += 60;
+    timePassed -= 60;
     setTime(timePassed);
 
     // meta
@@ -62,8 +62,8 @@ void K3_Callback(void) {
 void K2_Callback(void) {
     // action
     // decrement number
-    lcdState.number--;
-    setNumber(lcdState.number);
+    timePassed += 60;
+    setTime(timePassed);
 
     // meta
     TMR4 = 0;
@@ -73,8 +73,8 @@ void K2_Callback(void) {
 void K1_Callback(void) {
     // action
     // increment number
-    lcdState.number++;
-    setNumber(lcdState.number);
+    timePassed += 3600;
+    setTime(timePassed);
 
     // meta 
     TMR4 = 0;
@@ -87,10 +87,7 @@ int main(void)
 	initialize_HW();
     initLCD(&lcdState);
 
-    lcdState.misc.sp1 = 1;
-    updateLCD();
-
-    //displayTest(1);
+    // displayTest(1);
 	
 	// main loop:
 	while(1)
