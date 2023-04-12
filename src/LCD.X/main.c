@@ -7,6 +7,7 @@
 
 // GLOBALS
 uint8_t buttonAllow = 1;
+uint8_t buttonPressed = 0;
 
 // this is 12:00 
 uint32_t timePassed = 43200;
@@ -44,7 +45,10 @@ void _ISR _T4Interrupt(void) {
 }
 
 void _ISR _CNInterrupt(void) {
-    
+    // clear ISR Flag
+    IFS1bits.CNIF = 0;
+    // we have a button event
+    buttonPressed = 1;
 }
 
 // k3 button action
@@ -87,22 +91,26 @@ int main(void)
 	initialize_HW();
     initLCD(&lcdState);
 
-    // displayTest(1);
+    //displayTest(1);
 	
 	// main loop:
 	while(1)
 	{
-        if(!PORTBbits.RB3 && buttonAllow) {
-            K3_Callback();
+        if(buttonPressed && buttonAllow) {
+            if(!PORTBbits.RB3) { // K3
+                K3_Callback();
+            }
+
+            if(!PORTDbits.RD8) { // K2
+                K2_Callback();
+            }   
+
+            if(!PORTBbits.RB7) { // K1
+                K1_Callback();
+            }        
+
+            buttonPressed = 0;
         }
-
-        if(!PORTDbits.RD8 && buttonAllow) {
-            K2_Callback();
-        }   
-
-        if(!PORTBbits.RB7 && buttonAllow) {
-            K1_Callback();
-        }        
 	}
 
     return 0;	

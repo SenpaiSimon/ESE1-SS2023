@@ -1,7 +1,7 @@
 #include "LCD_Driver.h"
 
 DIGIT_t digit1, digit2, digit3, digit4;
-uint8_t numberLookup[] = {_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _A, _B, _C, _D, _E, _F};
+const uint8_t numberLookup[] = {_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _A, _B, _C, _D, _E, _F};
 LCD_STATE_t *currentState;
 
 void initLCD(LCD_STATE_t *stateStorage) {
@@ -15,8 +15,9 @@ void initLCD(LCD_STATE_t *stateStorage) {
 
     LCDREFbits.LCDIRE   = 1; // enable reistor ladder
     LCDREFbits.LCDCST   = 0b0; // maximum contrast
-    LCDREFbits.LRLBP    = 0b11; // high power mode for mode B
-    LCDREFbits.LRLAT    = 0b0; // always in mode B
+    LCDREFbits.LRLBP    = 0b10; // high power mode for mode B
+    LCDREFbits.LRLAP    = 0b11; // high power mode for mode A
+    LCDREFbits.LRLAT    = 0b011; // 3 clocks A, 13 clocks B
 
     // select outputs pins enable
     // uC PIN          - PANEL PIN

@@ -84,7 +84,7 @@ void initTIMERS(void) {
     // same calculation but with 0.5Hz instead of 1Hz
     T2CONbits.T32 = 0;
     T2CONbits.TCKPS = 0b11;
-    PR2 = 62500;
+    PR2 = 31250;
 
     // enable interrupts on this timer
     _T2IE = 1; // needs to be timer 3! because timer 2 in 32 bit mode sets ir flag on timer 3
@@ -157,6 +157,9 @@ void initGPIO(void) {
     // KEY 3 - 13 / RB3 / CN5
     CNPU1bits.CN5PUE = 1; // pull up
     _CN5IE = 1;
+
+    // enanle CN interrupts
+    _CNIE = 1;
 }
 
 void initCLOCK(void) {
