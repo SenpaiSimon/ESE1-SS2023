@@ -87,6 +87,9 @@ int main(void)
 	initialize_HW();
     initLCD(&lcdState);
 
+    lcdState.misc.sp1 = 1;
+    updateLCD();
+
     //displayTest(1);
 	
 	// main loop:

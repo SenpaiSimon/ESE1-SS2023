@@ -166,7 +166,7 @@ void setPoints(bool d1, bool d2, bool d3, bool col) {
     currentState->dots.dp2 = d2;
     currentState->dots.dp3 = d3;
     currentState->dots.col = col;
-    updateLCD;
+    updateLCD();
 }
 
 void setLowerScript(bool bat, bool sp1, bool sp2, bool sp3, bool sp4) {
