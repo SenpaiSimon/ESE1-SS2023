@@ -14,7 +14,6 @@ void _ISR _T2Interrupt(void) {
 int main(void)
 {
 	initialize_HW();
-	
 	// main loop:
 	while(1)
 	{

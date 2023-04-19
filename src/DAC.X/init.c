@@ -69,20 +69,24 @@ void initTIMERS(void) {
      * --> this is okay since the timer is 16bit and the max number it can display is 65535
      */
     T1CONbits.TCKPS = 0b11; // prescaler 256
-    PR1 = 31250; // auto reload register --> divide this by 2 because we toogle at every event
+    // PR1 = 31250; // auto reload register --> divide this by 2 because we toogle at every event
+    PR1 = 62500;
+
+    // interrupts enabled
+    _T1IE = 1;
     
     // Start Timer
     T1CONbits.TON = 1;
 
+
     // TIMER2 -----------------------------------------------------------------------------
 
-    // same calculation but with 0.5Hz instead of 1Hz
     T2CONbits.T32 = 0;
-    T2CONbits.TCKPS = 0b11;
-    PR2 = 62500;
+    T2CONbits.TCKPS = 0b00; // prescaler 0
+    PR2 = 725;
 
     // enable interrupts on this timer
-    _T2IE = 1; // needs to be timer 3! because timer 2 in 32 bit mode sets ir flag on timer 3
+    _T2IE = 1; 
 
     // timer start
     T2CONbits.TON = 1;
@@ -152,6 +156,9 @@ void initGPIO(void) {
     // KEY 3 - 13 / RB3 / CN5
     CNPU1bits.CN5PUE = 1; // pull up
     _CN5IE = 1;
+
+    // enanle CN interrupts
+    _CNIE = 1;
 }
 
 void initCLOCK(void) {

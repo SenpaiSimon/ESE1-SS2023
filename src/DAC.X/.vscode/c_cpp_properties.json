@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "XC16-24FJ128",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${env:MPLAB_PATH}/packs/Microchip/PIC24F-GC_DFP/1.4.69/xc16/support/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "__XC16",
+                "__PICC__",
+                "__PIC24FJ128GC006__"
+            ],
+            "intelliSenseMode": "gcc-x64",
+            "cStandard": "c99",
+            "compilerPath": "${env:XC16_PATH}\\xc16-gcc.exe",
+            "configurationProvider": "ms-vscode.makefile-tools"
+        }
+    ],
+    "version": 4
+}
