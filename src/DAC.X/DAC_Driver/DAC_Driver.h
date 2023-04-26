@@ -14,13 +14,24 @@ extern "C" {
 
 #include <xc.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <math.h>
+#include <stdlib.h>
+
+#if defined(__NEED_uint16_t) && !defined(__DEFINED_uint16_t)
+typedef unsigned int           uint16_t;
+#define __DEFINED_uint16_t
+#endif
 
 void initDacDriver(void);
 
 void speakerOn(bool on);
 
-void sawToothgenerator();
+void generateSawToothBufferAndStart(uint32_t desiredFreq, uint32_t peak);
 
+void generateSineBufferAndStart(uint32_t desiredFreq, uint32_t peak);
+
+void setupDMA0(unsigned int *destination, unsigned int *source, uint32_t elementCount);
 
 
 #ifdef	__cplusplus

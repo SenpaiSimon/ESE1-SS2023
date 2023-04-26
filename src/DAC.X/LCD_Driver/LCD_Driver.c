@@ -1,7 +1,7 @@
 #include "LCD_Driver.h"
 
 DIGIT_t digit1, digit2, digit3, digit4;
-const uint8_t numberLookup[] = {_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _A, _B, _C, _D, _E, _F};
+const uint8_t numberLookup[] = {_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _A, _B, _HC, _D, _E, _F};
 LCD_STATE_t *currentState;
 
 void initLCD(LCD_STATE_t *stateStorage) {

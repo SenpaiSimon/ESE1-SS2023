@@ -9,8 +9,7 @@
 uint8_t buttonAllow = 1;
 uint8_t buttonPressed = 0;
 
-// this is 12:00 
-uint32_t timePassed = 43200;
+uint32_t currentFreq = 0;
 
 LCD_STATE_t lcdState;
 
@@ -18,21 +17,13 @@ LCD_STATE_t lcdState;
 void _ISR _T1Interrupt(void) {
     _T1IF = 0; // set flag
 
-    // one seconds gone
-    timePassed++;
-    if(timePassed >= 86400) {
-        // 86400 -> 24:00
-        // 0     -> 00:00
-        timePassed = 0;
-    }
-    setTime(timePassed);
 }
 
-// dac controller
+// dac controller and dma interrupts -- 22050 Hz
 void _ISR _T2Interrupt(void) {
     _T2IF = 0; // reset IR flag
 
-    sawToothgenerator();
+    // sawToothgenerator();
 }
 
 // de-bounce button
@@ -53,7 +44,8 @@ void _ISR _CNInterrupt(void) {
 // k3 button action
 void K3_Callback(void) {
     // action
-    speakerOn(!PORTBbits.RB12);
+    // toggle speaker
+    speakerOn(PORTBbits.RB12);
 
     // meta
     TMR4 = 0;
@@ -63,9 +55,11 @@ void K3_Callback(void) {
 // k2 button action
 void K2_Callback(void) {
     // action
-    // decrement number
-    timePassed += 60;
-    setTime(timePassed);
+    currentFreq -= 100;
+    if(currentFreq < 100) { currentFreq = 100; }
+
+
+    setNumber(currentFreq);
 
     // meta
     TMR4 = 0;
@@ -74,9 +68,10 @@ void K2_Callback(void) {
 
 void K1_Callback(void) {
     // action
-    // increment number
-    timePassed += 3600;
-    setTime(timePassed);
+    currentFreq += 100;
+    if(currentFreq > 9900) { currentFreq = 9900; }
+
+    setNumber(currentFreq);
 
     // meta 
     TMR4 = 0;
@@ -94,6 +89,8 @@ int main(void)
     speakerOn(false);
 
     //displayTest(1);
+    // generateSawToothBufferAndStart();
+    generateSineBufferAndStart(440, 1000);
 	
 	// main loop:
 	while(1)

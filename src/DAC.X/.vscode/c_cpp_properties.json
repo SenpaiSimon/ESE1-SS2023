@@ -4,13 +4,15 @@
             "name": "XC16-24FJ128",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${env:MPLAB_PATH}/packs/Microchip/PIC24F-GC_DFP/1.4.69/xc16/support/**"
+                "${env:MPLAB_PATH}/packs/Microchip/PIC24F-GC_DFP/1.4.69/xc16/support/**",
+                "${env:XC16_PATH}/../include/**"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE",
                 "__XC16",
+                "__NEED_uint16_t",
                 "__PICC__",
                 "__PIC24FJ128GC006__"
             ],
