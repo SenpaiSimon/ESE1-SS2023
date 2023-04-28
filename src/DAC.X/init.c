@@ -1,6 +1,7 @@
 // Initialization of the hardware
 
 #include <xc.h> // include processor description
+#include "TIMER_Driver/TIMER_Driver.h"
 
 
 // Set cofiguration registers:-------------------------------------------------------------
@@ -60,48 +61,22 @@ void initTIMERS(void);
 void initTIMERS(void) {
     // TIMER1 -----------------------------------------------------------------------------
 
-    /*
-     * We want the counter to reset in 1Hz intervals
-     * --> clock source for the timer is at 16Mhz
-     * --> 16Mhz/1Hz = 16.000.000 -- or in other words this is FOSC/2
-     * --> split this value up in PreScaler and Auto Reload value 
-     * --> with prescaler of 256 we have 62500 left for auto reloading
-     * --> this is okay since the timer is 16bit and the max number it can display is 65535
-     */
-    T1CONbits.TCKPS = 0b11; // prescaler 256
-    // PR1 = 31250; // auto reload register --> divide this by 2 because we toogle at every event
-    PR1 = 62500;
-
-    // interrupts enabled
-    _T1IE = 1;
-    
-    // Start Timer
-    T1CONbits.TON = 1;
+    initTimer1(16000000, 1, true);
+    startStopTimer1(true);
 
 
     // TIMER2 -----------------------------------------------------------------------------
 
-    T2CONbits.T32 = 0;
-    T2CONbits.TCKPS = 0b00; // prescaler 0
-    PR2 = 725;
-
-    // enable interrupts on this timer
-    _T2IE = 1; 
-
-    // timer start
-    T2CONbits.TON = 1;
+    initTimer2(16000000, 22050, true);
+    startStopTimer2(true);
 
 
     // TIMER 4 -----------------------------------------------------------------------------
     uint32_t delay_in_ms = 10;
+    uint32_t delay_in_hz = (1/(delay_in_ms/1000.0));
 
-    T4CONbits.T45 = 0;
-    T4CONbits.TCKPS = 0b11; // 256
-    //      Clock            1/T              Prescaler
-    PR4 = (uint16_t)((16000000 / (1/(delay_in_ms/1000.0))) / 256.0);
-    _T4IE = 1;
-
-    T4CONbits.TON = 1;
+    initTimer4(16000000, delay_in_hz, true);
+    startStopTimer4(true);
 }
 
 void initGPIO(void) {
