@@ -51,11 +51,20 @@ void setupDMA0(unsigned int *destination, unsigned int *source, uint32_t element
     DMACNT0 = elementCount; // how much data our buffer will have --> buffer entry count
 }
 
-void generateSawToothBufferAndStart(uint32_t desiredFreq, uint32_t peak) {
+void generateSawToothBufferAndStart(uint32_t sampleFreq, uint32_t desiredFreq, uint32_t peak) {
+    // stop it
+    DMACH0bits.CHEN = 0;
+    
+    free(sawBuffer);
+    
+    startStopTimer2(false);
+    initTimer2(16000000, sampleFreq, true);
+    startStopTimer2(true);
+
     // protect adc module
     if(peak > 1024) { peak = 1024; }
     
-    sawToothIncrement = (peak * desiredFreq) / (fsample / 1.0);
+    sawToothIncrement = (peak * desiredFreq) / (sampleFreq / 1.0);
     sawBufferSize = (unsigned int)(peak / sawToothIncrement);
     sawBuffer = (unsigned int*)calloc(sizeof(unsigned int), sawBufferSize);
 
@@ -71,11 +80,20 @@ void generateSawToothBufferAndStart(uint32_t desiredFreq, uint32_t peak) {
     DMACH0bits.CHEN = 1;
 }
 
-void generateSineBufferAndStart(uint32_t desiredFreq, uint32_t peak) {
+void generateSineBufferAndStart(uint32_t sampleFreq, uint32_t desiredFreq, uint32_t peak) {
+    // stop it
+    DMACH0bits.CHEN = 0;
+
+    free(sineBuffer);
+
+    startStopTimer2(false);
+    initTimer2(16000000, sampleFreq, true);
+    startStopTimer2(true);
+
     // protect adc module
     if(peak > 1024) { peak = 1024; }
 
-    sineIncrement = (peak * 2.0 * desiredFreq) / (fsample / 1.0);
+    sineIncrement = (peak * 2.0 * desiredFreq) / (sampleFreq / 1.0);
     sineBufferSize = (unsigned int)(peak / sineIncrement);
     sineBuffer = (unsigned int*)calloc(sizeof(unsigned int), sineBufferSize);
 

@@ -90,7 +90,7 @@ int main(void)
 
     //displayTest(1);
     // generateSawToothBufferAndStart();
-    generateSineBufferAndStart(440, 1000);
+    generateSineBufferAndStart(22050, 440, 1000);
 	
 	// main loop:
 	while(1)

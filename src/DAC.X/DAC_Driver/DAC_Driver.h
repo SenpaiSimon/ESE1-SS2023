@@ -18,6 +18,8 @@ extern "C" {
 #include <math.h>
 #include <stdlib.h>
 
+#include "../TIMER_Driver/TIMER_Driver.h"
+
 #if defined(__NEED_uint16_t) && !defined(__DEFINED_uint16_t)
 typedef unsigned int           uint16_t;
 #define __DEFINED_uint16_t
@@ -27,9 +29,9 @@ void initDacDriver(void);
 
 void speakerOn(bool on);
 
-void generateSawToothBufferAndStart(uint32_t desiredFreq, uint32_t peak);
+void generateSawToothBufferAndStart(uint32_t sampleFreq, uint32_t desiredFreq, uint32_t peak);
 
-void generateSineBufferAndStart(uint32_t desiredFreq, uint32_t peak);
+void generateSineBufferAndStart(uint32_t sampleFreq, uint32_t desiredFreq, uint32_t peak);
 
 void setupDMA0(unsigned int *destination, unsigned int *source, uint32_t elementCount);
 
