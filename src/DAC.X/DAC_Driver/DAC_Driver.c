@@ -56,7 +56,7 @@ void generateSawToothBufferAndStart(uint32_t desiredFreq, uint32_t peak) {
     if(peak > 1024) { peak = 1024; }
     
     sawToothIncrement = (peak * desiredFreq) / (fsample / 1.0);
-    sawBufferSize = (unsigned int)(fsample / desiredFreq);
+    sawBufferSize = (unsigned int)(peak / sawToothIncrement);
     sawBuffer = (unsigned int*)calloc(sizeof(unsigned int), sawBufferSize);
 
     setupDMA0((unsigned int*)&DAC1DAT, sawBuffer, sawBufferSize);
@@ -76,7 +76,7 @@ void generateSineBufferAndStart(uint32_t desiredFreq, uint32_t peak) {
     if(peak > 1024) { peak = 1024; }
 
     sineIncrement = (peak * 2.0 * desiredFreq) / (fsample / 1.0);
-    sineBufferSize = (unsigned int)(fsample / desiredFreq);
+    sineBufferSize = (unsigned int)(peak / sineIncrement);
     sineBuffer = (unsigned int*)calloc(sizeof(unsigned int), sineBufferSize);
 
     setupDMA0((unsigned int*)&DAC1DAT, sineBuffer, sineBufferSize);
