@@ -17,11 +17,12 @@ void initUART(uint32_t baudrate, uint32_t chipFreq) {
     U1MODEbits.STSEL = 0b0; // one stop bit
     U1MODEbits.PDSEL = 0b00; // no parity
     U1STAbits.UTXEN = 0b1; // enable transmits
+    _U1RXIE = 1; // enable the interrupt
     U1STAbits.URXISEL = 0b0; // trigger isr when data is here
-
     
     // set the baudrate
-    U1BRG = (((chipFreq / 1.0) / (4 * (baudrate / 1.0))) - 1);
+    float brgVal = (((chipFreq / 1.0) / (4 * (baudrate / 1.0))) - 1);
+    U1BRG = round(brgVal);
 }
 
 void sendUART1(uint8_t data) {
@@ -33,5 +34,24 @@ void sendUART1(uint8_t data) {
 uint8_t receiveUART() {
     if(U1STAbits.URXDA == 0b1) {
         return U1RXREG;
+    } else {
+        return 0x0;
+    }
+}
+
+void receiveBytesBlocking(uint8_t *buf, uint32_t byteCount) {
+    for(int i = 0; i < byteCount; i++) {
+        // first wait till we have data
+        while(U1STAbits.URXDA != 0b1);
+
+        buf[i] = U1RXREG;
+    }
+}
+
+void sendBytesBlocking(uint8_t *buf, uint32_t byteCount) {
+    for(int i = 0; i < byteCount; i++) {
+        while(U1STAbits.UTXBF == 1); // wait till there is space in buffer
+
+        U1TXREG = buf[i];
     }
 }

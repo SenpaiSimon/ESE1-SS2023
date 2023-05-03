@@ -8,47 +8,49 @@
 // GLOBALS
 uint8_t buttonAllow = 1;
 uint8_t buttonPressed = 0;
-uint8_t localRxBuffer;
 
 unsigned int currentNumber = 5000;
+uint8_t buf[10];
+uint8_t numbersReceived = 0;
 
 LCD_STATE_t lcdState;
 
 // uart receive isr
 void _ISR _U1RXInterrupt(void) {
     U1STAbits.OERR = 0;
-    localRxBuffer = receiveUART();
-    currentNumber = localRxBuffer;
-    setNumber(currentNumber);
 
-    lcdState.dots.col = !lcdState.dots.col;
-    updateLCD();
+    buf[numbersReceived] = receiveUART();
+    numbersReceived++;
+
+    if(numbersReceived == 4) { // we got all the numbers
+        numbersReceived = 0;
+        setDigits(buf[0], buf[1], buf[2], buf[3]);
+    }
 
     _U1RXIF = 0;
 }
 
 // 1 Hz timer
-void _ISR _T1Interrupt(void) {
-    _T1IF = 0; // set flag
-
+void _PSV _ISR _T1Interrupt(void) {
+    _T1IF = 0; // reset flag
 }
 
 // dac controller and dma interrupts -- 22050 Hz
-void _ISR _T2Interrupt(void) {
+void _PSV _ISR _T2Interrupt(void) {
     _T2IF = 0; // reset IR flag
 
-    // sawToothgenerator();
+    // actions
 }
 
 // de-bounce button
-void _ISR _T4Interrupt(void) {
+void _PSV _ISR _T4Interrupt(void) {
     _T4IF = 0;
     if(PORTBbits.RB3 && PORTDbits.RD8 && PORTBbits.RB7) {
         buttonAllow = 1;
     }
 }
 
-void _ISR _CNInterrupt(void) {
+void _PSV _ISR _CNInterrupt(void) {
     // clear ISR Flag
     IFS1bits.CNIF = 0;
     // we have a button event
@@ -61,8 +63,10 @@ void K3_Callback(void) {
     // toggle speaker
     // speakerOn(PORTBbits.RB12);
 
-    sendUART1(lcdState.number & 0xFF); // low byte
-    sendUART1(((lcdState.number) >> 8 ) & 0xFF); // high byte
+    // send current display number
+    buf[0] = currentNumber & 0xFF;
+    buf[1] = (currentNumber >> 8 ) & 0xFF;
+    sendBytesBlocking(buf, 2);
 
     // meta
     TMR4 = 0;
