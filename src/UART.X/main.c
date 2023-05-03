@@ -8,10 +8,24 @@
 // GLOBALS
 uint8_t buttonAllow = 1;
 uint8_t buttonPressed = 0;
+uint8_t localRxBuffer;
 
-uint32_t currentFreq = 0;
+unsigned int currentNumber = 5000;
 
 LCD_STATE_t lcdState;
+
+// uart receive isr
+void _ISR _U1RXInterrupt(void) {
+    U1STAbits.OERR = 0;
+    localRxBuffer = receiveUART();
+    currentNumber = localRxBuffer;
+    setNumber(currentNumber);
+
+    lcdState.dots.col = !lcdState.dots.col;
+    updateLCD();
+
+    _U1RXIF = 0;
+}
 
 // 1 Hz timer
 void _ISR _T1Interrupt(void) {
@@ -45,7 +59,10 @@ void _ISR _CNInterrupt(void) {
 void K3_Callback(void) {
     // action
     // toggle speaker
-    speakerOn(PORTBbits.RB12);
+    // speakerOn(PORTBbits.RB12);
+
+    sendUART1(lcdState.number & 0xFF); // low byte
+    sendUART1(((lcdState.number) >> 8 ) & 0xFF); // high byte
 
     // meta
     TMR4 = 0;
@@ -55,12 +72,8 @@ void K3_Callback(void) {
 // k2 button action
 void K2_Callback(void) {
     // action
-    currentFreq -= 100;
-    if(currentFreq < 100) { currentFreq = 100; }
-
-
-    setNumber(currentFreq);
-
+    currentNumber++;
+    setNumber(currentNumber);
     // meta
     TMR4 = 0;
     buttonAllow = 0;
@@ -68,10 +81,8 @@ void K2_Callback(void) {
 
 void K1_Callback(void) {
     // action
-    currentFreq += 100;
-    if(currentFreq > 9900) { currentFreq = 9900; }
-
-    setNumber(currentFreq);
+    currentNumber--;
+    setNumber(currentNumber);
 
     // meta 
     TMR4 = 0;
@@ -84,6 +95,9 @@ int main(void)
 	initialize_HW();
     initLCD(&lcdState);
 
+    // init uart
+    initUART(115200, 16000000);
+
     // speaker stuff
     initDacDriver();
     speakerOn(false);
@@ -91,7 +105,9 @@ int main(void)
     //displayTest(1);
     // generateSawToothBufferAndStart(22050, 440, 100);
     // generateSineBufferAndStart(22050, 440, 100);
-    playSampleSound();
+    // playSampleSound();
+
+    setNumber(currentNumber);
 	
 	// main loop:
 	while(1)

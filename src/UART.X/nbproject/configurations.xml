@@ -10,6 +10,7 @@
       <itemPath>LCD_Driver/LCD_Typedef.h</itemPath>
       <itemPath>DAC_Driver/DAC_Driver.h</itemPath>
       <itemPath>TIMER_Driver/TIMER_Driver.h</itemPath>
+      <itemPath>UART_Driver/UART_Driver.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -23,6 +24,7 @@
       <itemPath>LCD_Driver/LCD_Driver.c</itemPath>
       <itemPath>DAC_Driver/DAC_Driver.c</itemPath>
       <itemPath>TIMER_Driver/TIMER_Driver.c</itemPath>
+      <itemPath>UART_Driver/UART_Driver.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
