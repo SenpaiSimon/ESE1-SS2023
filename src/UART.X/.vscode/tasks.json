@@ -19,7 +19,27 @@
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+        },
+        {
+            "label": "MPLABX Clean",
+            "type": "mplabx",
+            "task": "clean",
+            "projectFolder": "${workspaceFolder}/",
+            "configuration": "default",
+            "problemMatcher": [
+                {
+                    "base": "$xc",
+                    "fileLocation": [
+                        "relative",
+                        "${workspaceFolder}/"
+                    ]
+                }
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
         }
     ]
 }

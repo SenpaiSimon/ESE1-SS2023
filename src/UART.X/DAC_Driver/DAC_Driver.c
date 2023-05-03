@@ -116,7 +116,7 @@ void playSound(unsigned short int sampleFreq, unsigned short int *sound, uint32_
     initTimer2(16000000, sampleFreq, true);
     startStopTimer2(true);
 
-    setupDMA0((unsigned int*)&DAC1DAT, sound, length);
+    setupDMA0((unsigned int*)&DAC1DAT, (unsigned int*)sound, length);
 
     DMACH0bits.CHEN = 1;
 }
