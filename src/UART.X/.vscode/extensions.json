@@ -1,0 +1,20 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=827846 to learn about workspace recommendations.
+	// Extension identifier format: ${publisher}.${name}. Example: vscode.csharp
+
+	// List of extensions which should be recommended for users of this workspace.
+	"recommendations": [
+		"ya-technologies.vslabx-extension",
+		"spmeesseman.vscode-taskexplorer",
+		"jeff-hykin.better-cpp-syntax",
+		"ms-vscode.cpptools",
+		"ms-vscode.cpptools-extension-pack",
+		"visualstudioexptteam.vscodeintellicode",
+		"visualstudioexptteam.intellicode-api-usage-examples",
+		"ms-vscode.makefile-tools"
+	],
+	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.
+	"unwantedRecommendations": [
+		
+	]
+}
