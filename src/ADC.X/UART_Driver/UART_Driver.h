@@ -50,6 +50,8 @@ void receiveBytesBlocking(uint8_t *buf, uint32_t byteCount);
  */
 void sendBytesBlocking(uint8_t *buf, uint32_t byteCount);
 
+void transmitDataToPcTool(unsigned int *channels, uint8_t channel_count);
+
 #ifdef	__cplusplus
 }
 #endif

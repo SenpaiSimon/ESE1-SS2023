@@ -1,5 +1,7 @@
 #include "UART_Driver.h"
 
+uint8_t tempBuf[10];
+
 void initUART(uint32_t baudrate, uint32_t chipFreq) {
     // peripheral pin mapping -----------------------------------------------
 	__builtin_write_OSCCONL(OSCCON&~0x0040);	// unlock registers
@@ -57,4 +59,21 @@ void sendBytesBlocking(uint8_t *buf, uint32_t byteCount) {
 
         U1TXREG = buf[i];
     }
+}
+
+void transmitDataToPcTool(unsigned int *channels, uint8_t channel_count) {
+    // start the transmission
+    tempBuf[0] = 0xFF;
+    tempBuf[1] = 0xFF;
+    sendBytesBlocking(tempBuf, 2);
+
+    // send over channel information
+    uint8_t j = 0;
+    for(int i = 0; i < channel_count*2; i+=2) {
+        tempBuf[i] = channels[j] & 0xFF; // low byte
+        tempBuf[i+1] = (channels[j] >> 8) & 0xFF; // high byte
+        j++;
+    }
+
+    sendBytesBlocking(buf, 2*channel_count);
 }

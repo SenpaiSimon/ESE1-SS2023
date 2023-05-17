@@ -15,7 +15,8 @@ unsigned int currentNumber = 5000;
 uint8_t buf[10];
 uint8_t numbersReceived = 0;
 
-uint32_t adc_data = 0;
+adc_storage_t adc_results;
+unsigned int adcResultBuffer[2];
 uint8_t selectedChannel = VBAT_ADC;
 
 LCD_STATE_t lcdState;
@@ -134,8 +135,14 @@ int main(void)
 	while(1)
 	{
         if(sampleNow) {
-            adc_data = readChannel(selectedChannel);
-            setNumber(rawToVoltage(adc_data));
+            adc_results = readBothChannels();
+
+            setNumber(rawToVoltage((selectedChannel == VBAT_ADC) ? adc_results.vbat : adc_results.iin));
+
+            adcResultBuffer[0] = adc_results.vbat;
+            adcResultBuffer[1] = adc_results.iin;
+            transmitDataToPcTool(adcResultBuffer, 2);
+
             sampleNow = 0;
         }
 
