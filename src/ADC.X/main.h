@@ -3,6 +3,7 @@
 #include "LCD_Driver/LCD_Driver.h"
 #include "DAC_Driver/DAC_Driver.h"
 #include "UART_Driver/UART_Driver.h"
+#include "ADC_Driver/ADC_Driver.h"
 #include <string.h>
 
 #define _PSV __attribute__((auto_psv))

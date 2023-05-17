@@ -9,9 +9,14 @@
 uint8_t buttonAllow = 1;
 uint8_t buttonPressed = 0;
 
+uint8_t sampleNow = 0;
+
 unsigned int currentNumber = 5000;
 uint8_t buf[10];
 uint8_t numbersReceived = 0;
+
+uint32_t adc_data = 0;
+uint8_t selectedChannel = VBAT_ADC;
 
 LCD_STATE_t lcdState;
 
@@ -45,6 +50,7 @@ void _PSV _ISR _T2Interrupt(void) {
     _T2IF = 0; // reset IR flag
 
     // actions
+    sampleNow = 1;
 }
 
 // de-bounce button
@@ -81,8 +87,8 @@ void K3_Callback(void) {
 // k2 button action
 void K2_Callback(void) {
     // action
-    currentNumber++;
-    setNumber(currentNumber);
+    selectedChannel = IN1_ADC;
+    
     // meta
     TMR4 = 0;
     buttonAllow = 0;
@@ -90,9 +96,7 @@ void K2_Callback(void) {
 
 void K1_Callback(void) {
     // action
-    currentNumber--;
-    setNumber(currentNumber);
-    sendBytesBlocking("test\n\r", strlen("test\n\r"));
+    selectedChannel = VBAT_ADC;
 
     // meta 
     TMR4 = 0;
@@ -112,16 +116,29 @@ int main(void)
     initDacDriver();
     speakerOn(false);
 
+    // adc
+    initADC();
+
+    // timers
+    initTimer2(16000000, 10, true);
+    startStopTimer2(true);
+
     //displayTest(1);
     // generateSawToothBufferAndStart(22050, 440, 100);
     // generateSineBufferAndStart(22050, 440, 100);
     // playSampleSound();
 
-    setNumber(currentNumber);
+    setPoints(1,0,0,0);
 	
 	// main loop:
 	while(1)
 	{
+        if(sampleNow) {
+            adc_data = readChannel(selectedChannel);
+            setNumber(rawToVoltage(adc_data));
+            sampleNow = 0;
+        }
+
         if(buttonPressed && buttonAllow) {
             if(!PORTBbits.RB3) { // K3
                 K3_Callback();
