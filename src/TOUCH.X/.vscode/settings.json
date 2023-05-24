@@ -2,6 +2,7 @@
     "files.associations": {
         "xc.h": "c",
         "p24fj128gc006.h": "c",
-        "dac_driver.h": "c"
+        "dac_driver.h": "c",
+        "touch_driver.h": "c"
     }
 }

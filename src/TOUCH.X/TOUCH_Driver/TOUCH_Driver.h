@@ -12,7 +12,9 @@
 extern "C" {
 #endif
 
+#include <xc.h>
 
+void initTouchDriver();
 
 
 #ifdef	__cplusplus

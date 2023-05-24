@@ -1,4 +1,4 @@
-// Prof. Dr. Artem Ivanov
+// Simon Obermeier & Sven Menzel
 // HAW Landshut
 
 
@@ -16,13 +16,23 @@ uint8_t buf[10];
 uint8_t numbersReceived = 0;
 
 adc_storage_t adc_results;
+pad_storage_t pad_results;
+
 unsigned int adcResultBuffer[2];
 uint8_t selectedChannel = VBAT_ADC;
 
 LCD_STATE_t lcdState;
 
+// adc done isr 
+void _PSV _ISR _ADC1Interrupt(void) {
+    _AD1IF = 0; // reset isr flag
+    CTMUCON1bits.IDISSEN = 1; // switch close again
+    getPadStates(&pad_results);
+    setNumber(pad_results.pad1);
+}
+
 // uart receive isr
-void _ISR _U1RXInterrupt(void) {
+void _PSV _ISR _U1RXInterrupt(void) {
     U1STAbits.OERR = 0;
 
     buf[numbersReceived] = receiveUART();
@@ -53,7 +63,7 @@ void _PSV _ISR _T2Interrupt(void) {
     _T2IF = 0; // reset IR flag
 
     // actions
-    
+    CTMUCON1bits.IDISSEN = 0; // open the switch
 }
 
 // de-bounce button
@@ -114,25 +124,34 @@ int main(void)
     initDacDriver();
     speakerOn(false);
 
+    // touch 
+    initTouchDriver();
+    initTimer2(16000000, 200, true);
+    startStopTimer2(true);
+
     // adc
     initADC();
-    initOnboardVoltADC();
+
+    // never init these following two lines at the same time, they only work exclsuive ty
+    // initOnboardVoltADC();
+    initTouchADC();
 
     // timers
     initTimer1(16000000, 10, true);
     startStopTimer1(true);
 
-    //displayTest(1);
+    
+    // displayTest(1);
     // generateSawToothBufferAndStart(22050, 440, 100);
     // generateSineBufferAndStart(22050, 440, 100);
     // playSampleSound();
-
-    setPoints(1,0,0,0);
 	
+    setPoints(1,0,0,0);
+
 	// main loop:
 	while(1)
 	{
-        if(sampleNow) {
+        if(sampleNow && false) {
             readBothChannels(&adc_results);
             adc_results.vbat = rawToVoltage(adc_results.vbat);
             adc_results.iin = rawToVoltage(adc_results.iin);

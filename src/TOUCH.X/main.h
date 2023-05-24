@@ -20,6 +20,8 @@ void _PSV _ISR _CNInterrupt(void);
 
 void _PSV _ISR _U1RXInterrupt(void);
 
+void _PSV _ISR _ADC1Interrupt(void);
+
 void K1_Callback(void);
 
 void K2_Callback(void);

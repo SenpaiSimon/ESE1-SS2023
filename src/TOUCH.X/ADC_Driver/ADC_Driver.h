@@ -15,6 +15,11 @@ extern "C" {
 #define VBAT_ADC 1
 #define IN1_ADC 6
 
+#define PAD1_ADC 30
+#define PAD2_ADC 11
+#define PAD3_ADC 13
+#define PAD4_ADC 15
+
 #include <xc.h>
 
 typedef struct adc_storage {
@@ -22,11 +27,20 @@ typedef struct adc_storage {
     unsigned int iin;
 } adc_storage_t;
 
+typedef struct pad_storage {
+    unsigned int pad1;
+    unsigned int pad2;
+    unsigned int pad3;
+    unsigned int pad4;
+} pad_storage_t;
+
 void initADC();
 unsigned int readChannel(uint8_t channel);
 unsigned int rawToVoltage(unsigned int input);
 void readBothChannels(adc_storage_t *storage);
 void initOnboardVoltADC();
+void initTouchADC();
+void getPadStates(pad_storage_t *storage);
 
 #ifdef	__cplusplus
 }
