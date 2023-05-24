@@ -36,22 +36,24 @@ void _ISR _U1RXInterrupt(void) {
     _U1RXIF = 0;
 }
 
+// uart tx isr
 void _ISR _U1TXInterrupt(void) {
     U1STAbits.OERR = 0;
     _U1TXIF = 0;
 }
 
-// 1 Hz timer
 void _PSV _ISR _T1Interrupt(void) {
     _T1IF = 0; // reset flag
+
+    // actions
+    sampleNow = 1;
 }
 
-// dac controller and dma interrupts -- 22050 Hz
 void _PSV _ISR _T2Interrupt(void) {
     _T2IF = 0; // reset IR flag
 
     // actions
-    sampleNow = 1;
+    
 }
 
 // de-bounce button
@@ -74,11 +76,6 @@ void K3_Callback(void) {
     // action
     // toggle speaker
     // speakerOn(PORTBbits.RB12);
-
-    // send current display number
-    buf[0] = currentNumber & 0xFF;
-    buf[1] = (currentNumber >> 8 ) & 0xFF;
-    sendBytesBlocking(buf, 2);
 
     // meta
     TMR4 = 0;
@@ -119,10 +116,11 @@ int main(void)
 
     // adc
     initADC();
+    initOnboardVoltADC();
 
     // timers
-    initTimer2(16000000, 10, true);
-    startStopTimer2(true);
+    initTimer1(16000000, 10, true);
+    startStopTimer1(true);
 
     //displayTest(1);
     // generateSawToothBufferAndStart(22050, 440, 100);
@@ -135,9 +133,11 @@ int main(void)
 	while(1)
 	{
         if(sampleNow) {
-            adc_results = readBothChannels();
+            readBothChannels(&adc_results);
+            adc_results.vbat = rawToVoltage(adc_results.vbat);
+            adc_results.iin = rawToVoltage(adc_results.iin);
 
-            setNumber(rawToVoltage((selectedChannel == VBAT_ADC) ? adc_results.vbat : adc_results.iin));
+            setNumber((selectedChannel == VBAT_ADC) ? adc_results.vbat : adc_results.iin);
 
             adcResultBuffer[0] = adc_results.vbat;
             adcResultBuffer[1] = adc_results.iin;

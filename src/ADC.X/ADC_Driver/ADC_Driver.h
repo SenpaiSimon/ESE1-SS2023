@@ -25,8 +25,8 @@ typedef struct adc_storage {
 void initADC();
 unsigned int readChannel(uint8_t channel);
 unsigned int rawToVoltage(unsigned int input);
-adc_storage_t readBothChannels();
-
+void readBothChannels(adc_storage_t *storage);
+void initOnboardVoltADC();
 
 #ifdef	__cplusplus
 }

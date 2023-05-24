@@ -25,7 +25,6 @@ void initADC() {
     ADCON2bits.BUFORG = 1; // organize buffer 
 
     // sample list
-    ADL0CONLbits.SLSIZE = 2-1; // size of list two
     ADL0CONHbits.ASEN = 1;     // auto scan
     ADL0CONHbits.SLINT = 1;
 
@@ -34,8 +33,6 @@ void initADC() {
     ADL0PTR = 0;                // start the data pointer at zero
 
     ADL0CONHbits.CM = 0;
-    ADTBL0bits.ADCH = VBAT_ADC; // set channel for vbat to list 0
-    ADTBL1bits.ADCH = IN1_ADC;  // set channel for iin1 to list 1
 
     ADCON1bits.ADON = 1;             // Enable A/D.
     while(ADSTATHbits.ADREADY == 0); // Wait for ready flag set.
@@ -43,6 +40,12 @@ void initADC() {
     while(ADSTATHbits.ADREADY == 0); // Wait for ready flag set.
     ADL0CONLbits.SAMP = 1;           // Close sample switch.
     ADL0CONLbits.SLEN = 1;           // enable the list
+}
+
+void initOnboardVoltADC() {
+    ADL0CONLbits.SLSIZE = 2-1; // size of list two
+    ADTBL0bits.ADCH = VBAT_ADC; // set channel for vbat to list 0
+    ADTBL1bits.ADCH = IN1_ADC;  // set channel for iin1 to list 1
 }
 
 unsigned int readChannel(uint8_t channel) {
@@ -66,16 +69,14 @@ unsigned int readChannel(uint8_t channel) {
     return result;
 }
 
-adc_storage_t readBothChannels() {
-    adc_storage_t temp;
-
+void readBothChannels(adc_storage_t *storage) {
     _AD1IF = 0;
     ADL0CONLbits.SAMP = 0;
     while(!_AD1IF) {};
 
     ADL0CONLbits.SAMP = 1;
-    temp.vbat = ADRES0;
-    temp.iin = ADRES1;
+    storage->vbat = ADRES0;
+    storage->iin = ADRES1;
 }
 
 unsigned int rawToVoltage(unsigned int input) {

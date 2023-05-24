@@ -75,5 +75,5 @@ void transmitDataToPcTool(unsigned int *channels, uint8_t channel_count) {
         j++;
     }
 
-    sendBytesBlocking(buf, 2*channel_count);
+    sendBytesBlocking(tempBuf, 2*channel_count);
 }
