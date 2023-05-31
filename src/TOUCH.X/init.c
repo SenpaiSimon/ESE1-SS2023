@@ -148,8 +148,8 @@ void initCLOCK(void) {
 
 void initialize_HW(void){
     initCLOCK();
+    
+    initGPIO();
 
     initTIMERS();
-
-	initGPIO();
 }	

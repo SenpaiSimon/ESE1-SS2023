@@ -68,22 +68,9 @@ void initTouchADC() {
     ADL0CONLbits.SLTSRC = 0b00110; // CTMU as trigger source
 
     // setup list
-    ADL0CONLbits.SLSIZE = 1-1;  // size of list four
+    ADL0CONLbits.SLSIZE = 1-1;  // size of list one
     ADTBL0bits.UCTMU = 1;
-    // ADTBL1bits.UCTMU = 1;
-    // ADTBL2bits.UCTMU = 1;
-    // ADTBL3bits.UCTMU = 1;
     ADTBL0bits.ADCH = PAD1_ADC;
-    // ADTBL1bits.ADCH = PAD2_ADC;
-    // ADTBL2bits.ADCH = PAD3_ADC;
-    // ADTBL3bits.ADCH = PAD4_ADC;
-}
-
-void getPadStates(pad_storage_t *storage) {
-    storage->pad1 = ADRES0;
-    storage->pad2 = ADRES1;
-    storage->pad3 = ADRES2;
-    storage->pad4 = ADRES3;
 }
 
 unsigned int readChannel(uint8_t channel) {

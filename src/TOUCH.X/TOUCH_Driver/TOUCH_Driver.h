@@ -14,7 +14,22 @@ extern "C" {
 
 #include <xc.h>
 
+typedef struct pad_storage {
+    unsigned int pad1;
+    unsigned int pad2;
+    unsigned int pad3;
+    unsigned int pad4;
+} pad_storage_t;
+
+typedef enum pad_select {
+    PAD1 = 0,
+    PAD2 = 1,
+    PAD3 = 2,
+    PAD4 = 3
+} pad_select_t;
+
 void initTouchDriver();
+void getPadStates(pad_storage_t *storage);
 
 
 #ifdef	__cplusplus

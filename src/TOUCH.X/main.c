@@ -18,17 +18,57 @@ uint8_t numbersReceived = 0;
 adc_storage_t adc_results;
 pad_storage_t pad_results;
 
-unsigned int adcResultBuffer[2];
+unsigned int adcResultBuffer[4];
 uint8_t selectedChannel = VBAT_ADC;
 
 LCD_STATE_t lcdState;
+pad_select_t padCounter = PAD1;
+bool fullRefresh = false;
 
-// adc done isr 
+// #define SAMPLE_ONE
+
+// adc done isr --> do the reading of the pads
 void _PSV _ISR _ADC1Interrupt(void) {
     _AD1IF = 0; // reset isr flag
-    CTMUCON1bits.IDISSEN = 1; // switch close again
-    getPadStates(&pad_results);
-    setNumber(pad_results.pad1);
+
+    CTMUCON1bits.IDISSEN = 1; // close switch for old channel
+    #ifndef SAMPLE_ONE
+    switch(padCounter) {
+        case PAD1: // pad 1
+            pad_results.pad1 = ADRES0;
+            ADTBL0bits.ADCH = PAD2_ADC;
+            padCounter = PAD2;
+        break;
+        case PAD2: // pad 2
+            pad_results.pad2 = ADRES0;
+            ADTBL0bits.ADCH = PAD3_ADC;
+            padCounter = PAD3;
+        break;
+
+        case PAD3: // pad 3
+            pad_results.pad3 = ADRES0;
+            ADTBL0bits.ADCH = PAD4_ADC;
+            padCounter = PAD4;
+        break;
+
+        case PAD4: // pad 4  
+            pad_results.pad4 = ADRES0;
+            ADTBL0bits.ADCH = PAD1_ADC;
+            padCounter = PAD1;
+            fullRefresh = true;
+        break;
+    }
+    #else
+    pad_results.pad1 = ADRES0;
+    #endif
+
+    setNumber(rawToVoltage(pad_results.pad1));
+}
+
+//oc1 isr
+void _PSV _ISR _OC1Interrupt(void) {
+    _OC1IF = 0;
+    // CTMUCON1bits.IDISSEN = 1; // switch close again
 }
 
 // uart receive isr
@@ -47,7 +87,7 @@ void _PSV _ISR _U1RXInterrupt(void) {
 }
 
 // uart tx isr
-void _ISR _U1TXInterrupt(void) {
+void _PSV _ISR _U1TXInterrupt(void) {
     U1STAbits.OERR = 0;
     _U1TXIF = 0;
 }
@@ -61,9 +101,10 @@ void _PSV _ISR _T1Interrupt(void) {
 
 void _PSV _ISR _T2Interrupt(void) {
     _T2IF = 0; // reset IR flag
-
     // actions
+
     CTMUCON1bits.IDISSEN = 0; // open the switch
+    CTMUCON2 &= ~(0b1100000000); // reset edge stats
 }
 
 // de-bounce button
@@ -151,16 +192,18 @@ int main(void)
 	// main loop:
 	while(1)
 	{
-        if(sampleNow && false) {
-            readBothChannels(&adc_results);
-            adc_results.vbat = rawToVoltage(adc_results.vbat);
-            adc_results.iin = rawToVoltage(adc_results.iin);
+        if(sampleNow) {
+            // readBothChannels(&adc_results);
+            // adc_results.vbat = rawToVoltage(adc_results.vbat);
+            // adc_results.iin = rawToVoltage(adc_results.iin);
 
-            setNumber((selectedChannel == VBAT_ADC) ? adc_results.vbat : adc_results.iin);
+            // setNumber((selectedChannel == VBAT_ADC) ? adc_results.vbat : adc_results.iin);
 
-            adcResultBuffer[0] = adc_results.vbat;
-            adcResultBuffer[1] = adc_results.iin;
-            transmitDataToPcTool(adcResultBuffer, 2);
+            adcResultBuffer[0] = pad_results.pad1;
+            adcResultBuffer[1] = pad_results.pad2;
+            adcResultBuffer[2] = pad_results.pad3;
+            adcResultBuffer[3] = pad_results.pad4;
+            transmitDataToPcTool(adcResultBuffer, 4);
 
             sampleNow = 0;
         }
