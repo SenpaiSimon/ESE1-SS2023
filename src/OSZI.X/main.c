@@ -24,8 +24,16 @@ uint8_t selectedChannel = VBAT_ADC;
 LCD_STATE_t lcdState;
 pad_select_t padCounter = PAD1;
 bool fullRefresh = false;
+pga_instruction_t instruction;
 
 // #define SAMPLE_ONE
+
+void _PSV _ISR _SPI1Interrupt(void) {
+    _SPI1IF = 0;
+
+    spiControlCS(HIZ);
+}
+
 
 // adc done isr --> do the reading of the pads
 void _PSV _ISR _ADC1Interrupt(void) {
@@ -145,7 +153,9 @@ void K2_Callback(void) {
 
 void K1_Callback(void) {
     // action
-    selectedChannel = VBAT_ADC;
+
+    sendInstruction(&instruction);
+    instruction.bits_t.data++;
 
     // meta 
     TMR4 = 0;
@@ -171,16 +181,21 @@ int main(void)
     startStopTimer2(true);
 
     // adc
-    initADC();
+    // initADC(); // not needed when using initOszi
 
     // never init these following two lines at the same time, they only work exclsuive ty
     // initOnboardVoltADC();
-    initTouchADC();
+    // initTouchADC();
 
     // timers
     initTimer1(16000000, 10, true);
     startStopTimer1(true);
 
+    // spi
+    initOszi();
+    instruction.bits_t.command_bytes = 0b010;
+    instruction.bits_t.indirect_addr = 0;
+    instruction.bits_t.data = 0b000;
     
     // displayTest(1);
     // generateSawToothBufferAndStart(22050, 440, 100);
@@ -199,14 +214,18 @@ int main(void)
 
             // setNumber((selectedChannel == VBAT_ADC) ? adc_results.vbat : adc_results.iin);
 
-            adcResultBuffer[0] = pad_results.pad1;
-            adcResultBuffer[1] = pad_results.pad2;
-            adcResultBuffer[2] = pad_results.pad3;
-            adcResultBuffer[3] = pad_results.pad4;
-            transmitDataToPcTool(adcResultBuffer, 4);
+            // adcResultBuffer[0] = pad_results.pad1;
+            // adcResultBuffer[1] = pad_results.pad2;
+            // adcResultBuffer[2] = pad_results.pad3;
+            // adcResultBuffer[3] = pad_results.pad4;
+            // transmitDataToPcTool(adcResultBuffer, 4);
+
+
 
             sampleNow = 0;
         }
+        unsigned int test = getAnalogFrontADC();
+        setNumber(test);
 
         if(buttonPressed && buttonAllow) {
             if(!PORTBbits.RB3) { // K3

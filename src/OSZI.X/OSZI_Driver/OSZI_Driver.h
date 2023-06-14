@@ -12,6 +12,7 @@
 extern "C" {
 #endif
 
+#define ANALOG_FRONT_ADC 0
 
 
 #include <xc.h>
@@ -21,10 +22,10 @@ extern "C" {
 
 typedef union pga_instruction {
     struct bits {
+        int data : 8;
         int indirect_addr : 1;
         int :4;
         int command_bytes : 3;
-        int data : 8;
     } bits_t;
     unsigned int data;
 }pga_instruction_t;
@@ -39,7 +40,8 @@ void spiControlCS(od_t od);
 void initSpi();
 void initOszi();
 void sendInstruction(pga_instruction_t *instruction);
-
+void initOsziADC();
+unsigned int getAnalogFrontADC();
 
 
 #ifdef	__cplusplus
