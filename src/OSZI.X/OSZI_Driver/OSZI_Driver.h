@@ -18,6 +18,7 @@ extern "C" {
 #include <xc.h>
 #include "../UART_Driver/UART_Driver.h"
 #include "../ADC_Driver/ADC_Driver.h"
+#include "../DAC_Driver/DAC_Driver.h"
 
 
 typedef union pga_instruction {
@@ -30,11 +31,28 @@ typedef union pga_instruction {
     unsigned int data;
 }pga_instruction_t;
 
+
+typedef struct oszi_config {
+    uint8_t vertical;
+    uint8_t tad_fak_low;
+    uint8_t tad_fak_high;
+    uint8_t trigger_low;
+    uint8_t trigger_high;
+    char trigger_mode;
+    char trigger_edge;
+} oszi_config_t;
+
 typedef enum od {
     HIZ,
     OD
 } od_t;
 
+void fill_adc_buffer();
+void sendOsziDataToPC();
+void configurePGA();
+void receiveOsziConfig();
+void sendOsziConfig();
+oszi_config_t* getOsziConfig();
 void spiWrite(unsigned int *data, uint8_t dataCount);
 void spiControlCS(od_t od);
 void initSpi();

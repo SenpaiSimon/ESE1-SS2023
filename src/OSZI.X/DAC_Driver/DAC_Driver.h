@@ -21,6 +21,12 @@ extern "C" {
 #include "../TIMER_Driver/TIMER_Driver.h"
 
 /*!
+ * @brief init dma0 for operation
+ * @param ISR_trigger trigger which activates dma0 
+ */
+void initDMA0(unsigned int ISR_trigger);
+
+/*!
  * @brief init the dac peripheral
  */
 void initDacDriver(void);

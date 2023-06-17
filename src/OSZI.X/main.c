@@ -24,7 +24,6 @@ uint8_t selectedChannel = VBAT_ADC;
 LCD_STATE_t lcdState;
 pad_select_t padCounter = PAD1;
 bool fullRefresh = false;
-pga_instruction_t instruction;
 
 // #define SAMPLE_ONE
 
@@ -76,20 +75,11 @@ void _PSV _ISR _ADC1Interrupt(void) {
 //oc1 isr
 void _PSV _ISR _OC1Interrupt(void) {
     _OC1IF = 0;
-    // CTMUCON1bits.IDISSEN = 1; // switch close again
 }
 
 // uart receive isr
 void _PSV _ISR _U1RXInterrupt(void) {
     U1STAbits.OERR = 0;
-
-    buf[numbersReceived] = receiveUART();
-    numbersReceived++;
-
-    if(numbersReceived == 4) { // we got all the numbers
-        numbersReceived = 0;
-        setDigits(buf[0], buf[1], buf[2], buf[3]);
-    }
 
     _U1RXIF = 0;
 }
@@ -144,7 +134,7 @@ void K3_Callback(void) {
 // k2 button action
 void K2_Callback(void) {
     // action
-    selectedChannel = IN1_ADC;
+    // selectedChannel = IN1_ADC;
     
     // meta
     TMR4 = 0;
@@ -153,9 +143,6 @@ void K2_Callback(void) {
 
 void K1_Callback(void) {
     // action
-
-    sendInstruction(&instruction);
-    instruction.bits_t.data++;
 
     // meta 
     TMR4 = 0;
@@ -172,8 +159,8 @@ int main(void)
     initUART(115200, 16000000);
 
     // speaker stuff
-    initDacDriver();
-    speakerOn(false);
+    // initDacDriver();
+    // speakerOn(false);
 
     // touch 
     initTouchDriver();
@@ -193,9 +180,6 @@ int main(void)
 
     // spi
     initOszi();
-    instruction.bits_t.command_bytes = 0b010;
-    instruction.bits_t.indirect_addr = 0;
-    instruction.bits_t.data = 0b000;
     
     // displayTest(1);
     // generateSawToothBufferAndStart(22050, 440, 100);
@@ -224,8 +208,9 @@ int main(void)
 
             sampleNow = 0;
         }
-        unsigned int test = getAnalogFrontADC();
-        setNumber(test);
+
+        fill_adc_buffer(); // read the samples
+        sendOsziDataToPC();
 
         if(buttonPressed && buttonAllow) {
             if(!PORTBbits.RB3) { // K3

@@ -89,110 +89,110 @@ MP_LINKER_FILE_OPTION=,--script=p24FJ128GC006.gld
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-${OBJECTDIR}/init.o: init.c  .generated_files/flags/default/6a9b7e381b2b6d6431788665749bc4cd41a01d2c .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/init.o: init.c  .generated_files/flags/default/eac22eaa1646a281a9cc2aa9997f86be39a50b18 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/init.o.d 
 	@${RM} ${OBJECTDIR}/init.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  init.c  -o ${OBJECTDIR}/init.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/init.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
-${OBJECTDIR}/main.o: main.c  .generated_files/flags/default/253e8171ce6114d329eff5ccd8ddbc727afd3225 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/main.o: main.c  .generated_files/flags/default/a9716be405c5cd91133aa14f9fb8856b3720473b .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/main.o.d 
 	@${RM} ${OBJECTDIR}/main.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  main.c  -o ${OBJECTDIR}/main.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/main.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
-${OBJECTDIR}/LCD_Driver/LCD_Driver.o: LCD_Driver/LCD_Driver.c  .generated_files/flags/default/e6e7c321a4d7854af3a5cb467984bc1e7699da0e .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/LCD_Driver/LCD_Driver.o: LCD_Driver/LCD_Driver.c  .generated_files/flags/default/6179a6c8a4e570bcd90ac8bf64a2fb7847716f55 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/LCD_Driver" 
 	@${RM} ${OBJECTDIR}/LCD_Driver/LCD_Driver.o.d 
 	@${RM} ${OBJECTDIR}/LCD_Driver/LCD_Driver.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  LCD_Driver/LCD_Driver.c  -o ${OBJECTDIR}/LCD_Driver/LCD_Driver.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/LCD_Driver/LCD_Driver.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
-${OBJECTDIR}/DAC_Driver/DAC_Driver.o: DAC_Driver/DAC_Driver.c  .generated_files/flags/default/6e5b3042040ad017c90be3bfe8821612d7e5352c .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/DAC_Driver/DAC_Driver.o: DAC_Driver/DAC_Driver.c  .generated_files/flags/default/c0c9a550f761b15134580313ac3f93eb942c054f .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/DAC_Driver" 
 	@${RM} ${OBJECTDIR}/DAC_Driver/DAC_Driver.o.d 
 	@${RM} ${OBJECTDIR}/DAC_Driver/DAC_Driver.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  DAC_Driver/DAC_Driver.c  -o ${OBJECTDIR}/DAC_Driver/DAC_Driver.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/DAC_Driver/DAC_Driver.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
-${OBJECTDIR}/TIMER_Driver/TIMER_Driver.o: TIMER_Driver/TIMER_Driver.c  .generated_files/flags/default/4533ffdbefff81ef8edd52d5c871bc07d95186fb .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/TIMER_Driver/TIMER_Driver.o: TIMER_Driver/TIMER_Driver.c  .generated_files/flags/default/21e7e8cdef1fe9bebce63e84d227fdac0c9883a7 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/TIMER_Driver" 
 	@${RM} ${OBJECTDIR}/TIMER_Driver/TIMER_Driver.o.d 
 	@${RM} ${OBJECTDIR}/TIMER_Driver/TIMER_Driver.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  TIMER_Driver/TIMER_Driver.c  -o ${OBJECTDIR}/TIMER_Driver/TIMER_Driver.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/TIMER_Driver/TIMER_Driver.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
-${OBJECTDIR}/UART_Driver/UART_Driver.o: UART_Driver/UART_Driver.c  .generated_files/flags/default/40deebd87053244893f2b38df1b15ede458a26ee .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/UART_Driver/UART_Driver.o: UART_Driver/UART_Driver.c  .generated_files/flags/default/567eacc97c10c881e16037c72a0a161ae2bf9e30 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/UART_Driver" 
 	@${RM} ${OBJECTDIR}/UART_Driver/UART_Driver.o.d 
 	@${RM} ${OBJECTDIR}/UART_Driver/UART_Driver.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  UART_Driver/UART_Driver.c  -o ${OBJECTDIR}/UART_Driver/UART_Driver.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/UART_Driver/UART_Driver.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
-${OBJECTDIR}/ADC_Driver/ADC_Driver.o: ADC_Driver/ADC_Driver.c  .generated_files/flags/default/516877f68a1f8127c683456f27f65f412f581589 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/ADC_Driver/ADC_Driver.o: ADC_Driver/ADC_Driver.c  .generated_files/flags/default/3f81538f84ddef37ebb7e808b1155c26cb0635c1 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/ADC_Driver" 
 	@${RM} ${OBJECTDIR}/ADC_Driver/ADC_Driver.o.d 
 	@${RM} ${OBJECTDIR}/ADC_Driver/ADC_Driver.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  ADC_Driver/ADC_Driver.c  -o ${OBJECTDIR}/ADC_Driver/ADC_Driver.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/ADC_Driver/ADC_Driver.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
-${OBJECTDIR}/TOUCH_Driver/TOUCH_Driver.o: TOUCH_Driver/TOUCH_Driver.c  .generated_files/flags/default/652ecf155fa8860b92e89193b0f71776aad2dfe3 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/TOUCH_Driver/TOUCH_Driver.o: TOUCH_Driver/TOUCH_Driver.c  .generated_files/flags/default/c8765b3678eac8e1392b0721845e2d060783f80b .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/TOUCH_Driver" 
 	@${RM} ${OBJECTDIR}/TOUCH_Driver/TOUCH_Driver.o.d 
 	@${RM} ${OBJECTDIR}/TOUCH_Driver/TOUCH_Driver.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  TOUCH_Driver/TOUCH_Driver.c  -o ${OBJECTDIR}/TOUCH_Driver/TOUCH_Driver.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/TOUCH_Driver/TOUCH_Driver.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
-${OBJECTDIR}/OSZI_Driver/OSZI_Driver.o: OSZI_Driver/OSZI_Driver.c  .generated_files/flags/default/63b60016ac8b20312412ad1f45890bdac9ad222a .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/OSZI_Driver/OSZI_Driver.o: OSZI_Driver/OSZI_Driver.c  .generated_files/flags/default/34e3f144b0b561223c1f304ddb652623669d1a4a .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/OSZI_Driver" 
 	@${RM} ${OBJECTDIR}/OSZI_Driver/OSZI_Driver.o.d 
 	@${RM} ${OBJECTDIR}/OSZI_Driver/OSZI_Driver.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  OSZI_Driver/OSZI_Driver.c  -o ${OBJECTDIR}/OSZI_Driver/OSZI_Driver.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/OSZI_Driver/OSZI_Driver.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
 else
-${OBJECTDIR}/init.o: init.c  .generated_files/flags/default/fc167b5c48e5b47f741f72228d7f1617feca3574 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/init.o: init.c  .generated_files/flags/default/734096d51aaf338a5d3769808d156223ecd7eb78 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/init.o.d 
 	@${RM} ${OBJECTDIR}/init.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  init.c  -o ${OBJECTDIR}/init.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/init.o.d"      -mno-eds-warn  -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
-${OBJECTDIR}/main.o: main.c  .generated_files/flags/default/1c323996181407b92fa970665210cd0f0dd897f6 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/main.o: main.c  .generated_files/flags/default/f6dc29f5dd77d046cc9e9b10f43b1ebea334b22a .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/main.o.d 
 	@${RM} ${OBJECTDIR}/main.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  main.c  -o ${OBJECTDIR}/main.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/main.o.d"      -mno-eds-warn  -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
-${OBJECTDIR}/LCD_Driver/LCD_Driver.o: LCD_Driver/LCD_Driver.c  .generated_files/flags/default/3543901d298cad6bbe6b8831596c28c0f2e8e1e0 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/LCD_Driver/LCD_Driver.o: LCD_Driver/LCD_Driver.c  .generated_files/flags/default/594d36d56d40166e64bbae72c76029f2e1aa321e .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/LCD_Driver" 
 	@${RM} ${OBJECTDIR}/LCD_Driver/LCD_Driver.o.d 
 	@${RM} ${OBJECTDIR}/LCD_Driver/LCD_Driver.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  LCD_Driver/LCD_Driver.c  -o ${OBJECTDIR}/LCD_Driver/LCD_Driver.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/LCD_Driver/LCD_Driver.o.d"      -mno-eds-warn  -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
-${OBJECTDIR}/DAC_Driver/DAC_Driver.o: DAC_Driver/DAC_Driver.c  .generated_files/flags/default/641ec20a6677fd7156934d423e2cc85a61a5081 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/DAC_Driver/DAC_Driver.o: DAC_Driver/DAC_Driver.c  .generated_files/flags/default/a54791e5303d996e3c19682144eff823c3ed58b3 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/DAC_Driver" 
 	@${RM} ${OBJECTDIR}/DAC_Driver/DAC_Driver.o.d 
 	@${RM} ${OBJECTDIR}/DAC_Driver/DAC_Driver.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  DAC_Driver/DAC_Driver.c  -o ${OBJECTDIR}/DAC_Driver/DAC_Driver.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/DAC_Driver/DAC_Driver.o.d"      -mno-eds-warn  -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
-${OBJECTDIR}/TIMER_Driver/TIMER_Driver.o: TIMER_Driver/TIMER_Driver.c  .generated_files/flags/default/f46a7dd275f9867256ecffa151f2107ca202bf39 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/TIMER_Driver/TIMER_Driver.o: TIMER_Driver/TIMER_Driver.c  .generated_files/flags/default/aff2cbe8ce408d77e54e111295ac1b658b5f139f .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/TIMER_Driver" 
 	@${RM} ${OBJECTDIR}/TIMER_Driver/TIMER_Driver.o.d 
 	@${RM} ${OBJECTDIR}/TIMER_Driver/TIMER_Driver.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  TIMER_Driver/TIMER_Driver.c  -o ${OBJECTDIR}/TIMER_Driver/TIMER_Driver.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/TIMER_Driver/TIMER_Driver.o.d"      -mno-eds-warn  -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
-${OBJECTDIR}/UART_Driver/UART_Driver.o: UART_Driver/UART_Driver.c  .generated_files/flags/default/2b74eb6358700896330e85a5d2f2b92170551203 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/UART_Driver/UART_Driver.o: UART_Driver/UART_Driver.c  .generated_files/flags/default/2038d7ce424bf22b54a69f2f7980a5eab200b8f5 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/UART_Driver" 
 	@${RM} ${OBJECTDIR}/UART_Driver/UART_Driver.o.d 
 	@${RM} ${OBJECTDIR}/UART_Driver/UART_Driver.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  UART_Driver/UART_Driver.c  -o ${OBJECTDIR}/UART_Driver/UART_Driver.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/UART_Driver/UART_Driver.o.d"      -mno-eds-warn  -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
-${OBJECTDIR}/ADC_Driver/ADC_Driver.o: ADC_Driver/ADC_Driver.c  .generated_files/flags/default/25837f2e80ecbe549d49be53310f4c46bc14833d .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/ADC_Driver/ADC_Driver.o: ADC_Driver/ADC_Driver.c  .generated_files/flags/default/79e53508f0fd6aca30d6fc104c6676a15217bbff .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/ADC_Driver" 
 	@${RM} ${OBJECTDIR}/ADC_Driver/ADC_Driver.o.d 
 	@${RM} ${OBJECTDIR}/ADC_Driver/ADC_Driver.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  ADC_Driver/ADC_Driver.c  -o ${OBJECTDIR}/ADC_Driver/ADC_Driver.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/ADC_Driver/ADC_Driver.o.d"      -mno-eds-warn  -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
-${OBJECTDIR}/TOUCH_Driver/TOUCH_Driver.o: TOUCH_Driver/TOUCH_Driver.c  .generated_files/flags/default/5d8b5683810f4ac9e32692531c9c42b8ea2e652 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/TOUCH_Driver/TOUCH_Driver.o: TOUCH_Driver/TOUCH_Driver.c  .generated_files/flags/default/bb5c19ba58d67d8c958c345b791d6afa120eba98 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/TOUCH_Driver" 
 	@${RM} ${OBJECTDIR}/TOUCH_Driver/TOUCH_Driver.o.d 
 	@${RM} ${OBJECTDIR}/TOUCH_Driver/TOUCH_Driver.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  TOUCH_Driver/TOUCH_Driver.c  -o ${OBJECTDIR}/TOUCH_Driver/TOUCH_Driver.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/TOUCH_Driver/TOUCH_Driver.o.d"      -mno-eds-warn  -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
-${OBJECTDIR}/OSZI_Driver/OSZI_Driver.o: OSZI_Driver/OSZI_Driver.c  .generated_files/flags/default/3e1b7a685da92c6f9baa81ec01cf5b7c00fae8df .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/OSZI_Driver/OSZI_Driver.o: OSZI_Driver/OSZI_Driver.c  .generated_files/flags/default/54fce69d99e20047d6f1aaa84b027d584e1951f1 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/OSZI_Driver" 
 	@${RM} ${OBJECTDIR}/OSZI_Driver/OSZI_Driver.o.d 
 	@${RM} ${OBJECTDIR}/OSZI_Driver/OSZI_Driver.o 
@@ -239,11 +239,3 @@ endif
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${OBJECTDIR}
 	${RM} -r ${DISTDIR}
-
-# Enable dependency checking
-.dep.inc: .depcheck-impl
-
-DEPFILES=$(shell mplabwildcard ${POSSIBLE_DEPFILES})
-ifneq (${DEPFILES},)
-include ${DEPFILES}
-endif
