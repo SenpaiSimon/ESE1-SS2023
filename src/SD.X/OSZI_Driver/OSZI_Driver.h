@@ -13,7 +13,7 @@ extern "C" {
 #endif
 
 #define ANALOG_FRONT_ADC 0
-
+#define SAMPLE_SIZE 2
 
 #include <xc.h>
 #include "../UART_Driver/UART_Driver.h"

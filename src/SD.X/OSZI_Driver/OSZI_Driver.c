@@ -8,8 +8,8 @@ uint8_t config_counter = 0;
 uint8_t configBuffer[12];
 pga_instruction_t instruction;
 
-uint8_t adc_buffer[2 * 2048];
-unsigned int osziSampleCount = 2048;
+uint8_t adc_buffer[2 * SAMPLE_SIZE];
+unsigned int osziSampleCount = SAMPLE_SIZE;
 
 LCD_STATE_t *localLCD;
 

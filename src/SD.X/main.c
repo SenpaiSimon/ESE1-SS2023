@@ -180,7 +180,7 @@ int main(void)
     startStopTimer1(true);
 
     // spi
-    initOszi();
+    // initOszi();
     
     // displayTest(1);
     // generateSawToothBufferAndStart(22050, 440, 100);
