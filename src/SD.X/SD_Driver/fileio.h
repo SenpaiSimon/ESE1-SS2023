@@ -26,7 +26,7 @@ please contact mla_licensing@microchip.com
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include "system_config.h"
+#include "fileio_config.h"
 #include "system.h"
 
 #include "fileio_media.h"
@@ -152,8 +152,6 @@ typedef struct
     uint32_t        size;               // The size of the file
     uint32_t        absoluteOffset;     // The absolute offset in the file
     void *          disk;               // Pointer to a device structure
-    uint16_t *      lfnPtr;             // Pointer to a LFN buffer
-    uint16_t        lfnLen;             // Length of the long file name
     uint16_t        currentSector;      // The current sector in the current cluster of the file
     uint16_t        currentOffset;      // The position in the current sector
     uint16_t        entry;              // The position of the file's directory entry in its directory
@@ -179,7 +177,6 @@ typedef enum
     FILEIO_GET_PROPERTIES_CLUSTER_FAILURE,
     FILEIO_GET_PROPERTIES_STILL_WORKING = 0xFF
 } FILEIO_DRIVE_ERRORS;
-
 
 /***************************************************************************
     Function:
@@ -450,7 +447,7 @@ typedef struct
     uint16_t currentClusterOffset;
     uint16_t currentEntryOffset;
     uint16_t pathOffset;
-    uint16_t driveId;
+    char driveId;
 } FILEIO_SEARCH_RECORD;
 
 /***************************************************************************
@@ -579,9 +576,8 @@ bool FILEIO_MediaDetect (const FILEIO_DRIVE_CONFIG * driveConfig, void * mediaPa
 
 /*****************************************************************************
   Function:
-      FILEIO_ERROR_TYPE FILEIO_DriveMount (uint16_t driveId,
-          const FILEIO_DRIVE_CONFIG * driveConfig,
-          void * mediaParameters);
+      FILEIO_ERROR_TYPE FILEIO_DriveMount (char driveId,
+          const FILEIO_DRIVE_CONFIG * driveConfig, void * mediaParameters);
     
   Summary:
     Initializes a drive and loads its configuration information.
@@ -591,8 +587,8 @@ bool FILEIO_MediaDetect (const FILEIO_DRIVE_CONFIG * driveConfig, void * mediaPa
   Conditions:
     FILEIO_Initialize must have been called.
   Input:
-    driveId -          A Unicode character that will be used to identify the
-                       drive.
+    driveId -          An alphanumeric character that will be used to
+                       identify the drive.
     driveConfig -      Constant structure containing function pointers that
                        the library will use to access the drive.
     mediaParameters -  Constant structure containing media\-specific values
@@ -620,7 +616,7 @@ bool FILEIO_MediaDetect (const FILEIO_DRIVE_CONFIG * driveConfig, void * mediaPa
       * FILEIO_ERROR_NOT_FORMATTED - One of the parameters in the boot
         sector is bad in the partition being mounted.                         
   *****************************************************************************/
-FILEIO_ERROR_TYPE FILEIO_DriveMount (uint16_t driveId, const FILEIO_DRIVE_CONFIG * driveConfig, void * mediaParameters);
+FILEIO_ERROR_TYPE FILEIO_DriveMount (char driveId, const FILEIO_DRIVE_CONFIG * driveConfig, void * mediaParameters);
 
 /***************************************************************************
     Function:
@@ -651,7 +647,7 @@ int FILEIO_Format (FILEIO_DRIVE_CONFIG * config, void * mediaParameters, FILEIO_
 
 /***********************************************************************
   Function:
-      int FILEIO_DriveUnmount (const uint16_t driveID)
+      int FILEIO_DriveUnmount (const char driveID)
     
   Summary:
     Unmounts a drive.
@@ -666,7 +662,7 @@ int FILEIO_Format (FILEIO_DRIVE_CONFIG * config, void * mediaParameters, FILEIO_
       * If Success: FILEIO_RESULT_SUCCESS
       * If Failure: FILEIO_RESULT_FAILURE                               
   ***********************************************************************/
-int FILEIO_DriveUnmount (const uint16_t driveId);
+int FILEIO_DriveUnmount (const char driveId);
 
 /******************************************************************************
   Function:
@@ -702,12 +698,11 @@ int FILEIO_DriveUnmount (const uint16_t driveId);
         * FILEIO_ERROR_BAD_SECTOR_READ - The directory entry could not
           be cached.                                                           
   ******************************************************************************/
-int FILEIO_Remove (const uint16_t * pathName);
+int FILEIO_Remove (const char * pathName);
 
 /*******************************************************************************
   Function:
-      int FILEIO_Rename (const uint16_t * oldPathname,
-          const uint16_t * newFilename)
+      int FILEIO_Rename (const char * oldPathname, const char * newFilename)
     
   Summary:
     Renames a file.
@@ -749,11 +744,11 @@ int FILEIO_Remove (const uint16_t * pathName);
         * FILEIO_ERROR_BAD_CACHE_READ - The lfn entries could not be
           cached.                                                               
   *******************************************************************************/
-int FILEIO_Rename (const uint16_t * oldPathName, const uint16_t * newFileName);
+int FILEIO_Rename (const char * oldPathName, const char * newFileName);
 
 /************************************************************
   Function:
-        int FILEIO_DirectoryMake (const uint16_t * path)
+      int FILEIO_DirectoryMake (const char * path)
     
   Summary:
     Creates the directory/directories specified by 'path.'
@@ -771,11 +766,11 @@ int FILEIO_Rename (const uint16_t * oldPathName, const uint16_t * newFileName);
       * If Success: FILEIO_RESULT_SUCCESS
       * If Failure: FILEIO_RESULT_FAILURE                    
   ************************************************************/
-int FILEIO_DirectoryMake (const uint16_t * path);
+int FILEIO_DirectoryMake (const char * path);
 
 /*************************************************************************
   Function:
-      int FILEIO_DirectoryChange (const uint16_t * path)
+      int FILEIO_DirectoryChange (const char * path)
     
   Summary:
     Changes the current working directory.
@@ -795,11 +790,11 @@ int FILEIO_DirectoryMake (const uint16_t * path);
       * If Success: FILEIO_RESULT_SUCCESS
       * If Failure: FILEIO_RESULT_FAILURE                                 
   *************************************************************************/
-int FILEIO_DirectoryChange (const uint16_t * path);
+int FILEIO_DirectoryChange (const char * path);
 
 /******************************************************************************
   Function:
-      uint16_t FILEIO_DirectoryGetCurrent (uint16_t * buffer, uint16_t size)
+      uint16_t FILEIO_DirectoryGetCurrent (char * buffer, uint16_t size)
     
   Summary:
     Gets the name of the current working directory.
@@ -812,7 +807,7 @@ int FILEIO_DirectoryChange (const uint16_t * path);
     A drive must be mounted.
   Input:
     buffer -  The buffer to contain the current working directory name.
-    size -    Size of the buffer (16-bit words).
+    size -    Size of the buffer (bytes).
   Return:
       * uint16_t - The number of characters in the current working
         directory name. May exceed the size of the buffer. In this case, the
@@ -824,11 +819,11 @@ int FILEIO_DirectoryChange (const uint16_t * path);
         * FILEIO_ERROR_DIR_NOT_FOUND - One of the directories in your
           current working directory could not be found in its parent directory.
   ******************************************************************************/
-uint16_t FILEIO_DirectoryGetCurrent (uint16_t * buffer, uint16_t size);
+unsigned int FILEIO_DirectoryGetCurrent (char * buffer, unsigned int size);
 
 /************************************************************************
   Function:
-        int FILEIO_DirectoryRemove (const uint16_t * pathName)
+      int FILEIO_DirectoryRemove (const char * pathName)
     
   Summary:
     Deletes a directory.
@@ -842,11 +837,11 @@ uint16_t FILEIO_DirectoryGetCurrent (uint16_t * buffer, uint16_t size);
       * If Success: FILEIO_RESULT_SUCCESS
       * If Failure: FILEIO_RESULT_FAILURE                                
   ************************************************************************/
-int FILEIO_DirectoryRemove (const uint16_t * pathName);
+int FILEIO_DirectoryRemove (const char * pathName);
 
 /***************************************************************************
   Function:
-    FILEIO_ERROR_TYPE FILEIO_ErrorGet (uint16_t driveId)
+    FILEIO_ERROR_TYPE FILEIO_ErrorGet (char driveId)
 
     Summary:
         Gets the last error condition of a drive.
@@ -863,11 +858,11 @@ int FILEIO_DirectoryRemove (const uint16_t * pathName);
     Returns:
         FILEIO_ERROR_TYPE - The last error that occurred on the drive.
 ***************************************************************************/
-FILEIO_ERROR_TYPE FILEIO_ErrorGet (uint16_t driveId);
+FILEIO_ERROR_TYPE FILEIO_ErrorGet (char driveId);
 
 /***************************************************************************
   Function:
-    void FILEIO_ErrorClear (uint16_t driveId)
+    void FILEIO_ErrorClear (char driveId)
 
     Summary:
         Clears the last error on a drive.
@@ -884,11 +879,11 @@ FILEIO_ERROR_TYPE FILEIO_ErrorGet (uint16_t driveId);
     Returns:
         void
 ***************************************************************************/
-void FILEIO_ErrorClear (uint16_t driveId);
+void FILEIO_ErrorClear (char driveId);
 
 /***************************************************************************************
   Function:
-      int FILEIO_Open (FILEIO_OBJECT * filePtr, const uint16_t * pathName, uint16_t mode)
+        int FILEIO_Open (FILEIO_OBJECT * filePtr, const char * pathName, uint16_t mode)
     
   Summary:
     Opens a file for access.
@@ -934,7 +929,7 @@ void FILEIO_ErrorClear (uint16_t driveId);
           finding the cluster that contained the specified offset (can occur in
           APPEND mode).                                                   
   ***************************************************************************************/
-int FILEIO_Open (FILEIO_OBJECT * filePtr, const uint16_t * pathName, uint16_t mode);
+int FILEIO_Open (FILEIO_OBJECT * filePtr, const char * pathName, unsigned int mode);
 
 /***************************************************************************
   Function:
@@ -1288,7 +1283,7 @@ long FILEIO_Tell (FILEIO_OBJECT * handle);
           directory entries.
         * FILEIO_ERROR_DONE - File not found.                              
   ******************************************************************************/
-int FILEIO_Find (const uint16_t * fileName, unsigned int attr, FILEIO_SEARCH_RECORD * record, bool newSearch);
+int FILEIO_Find (const char * fileName, unsigned int attr, FILEIO_SEARCH_RECORD * record, bool newSearch);
 
 /***************************************************************************
   Function:
@@ -1332,11 +1327,11 @@ int FILEIO_Find (const uint16_t * fileName, unsigned int attr, FILEIO_SEARCH_REC
         * FILEIO_ERROR_BAD_SECTOR_READ - The directory entry could not
           be cached because there was an error reading from the device.                             
   ***************************************************************************************************/
-int FILEIO_LongFileNameGet (FILEIO_SEARCH_RECORD * record, uint16_t * buffer, uint16_t length);
+int FILEIO_LongFileNameGet (FILEIO_SEARCH_RECORD * record, unsigned int * buffer, unsigned int length);
 
 /********************************************************************
   Function:
-      FILEIO_FILE_SYSTEM_TYPE FILEIO_FileSystemTypeGet (uint16_t driveId)
+      FILEIO_FILE_SYSTEM_TYPE FILEIO_FileSystemTypeGet (char driveId)
     
   Summary:
     Describes the file system type of a file system.
@@ -1350,7 +1345,7 @@ int FILEIO_LongFileNameGet (FILEIO_SEARCH_RECORD * record, uint16_t * buffer, ui
       * If Success: FILEIO_FILE_SYSTEM_TYPE enumeration member
       * If Failure: FILEIO_FILE_SYSTEM_NONE                          
   ********************************************************************/
-FILEIO_FILE_SYSTEM_TYPE FILEIO_FileSystemTypeGet (uint16_t driveId);
+FILEIO_FILE_SYSTEM_TYPE FILEIO_FileSystemTypeGet (char driveId);
 
 /*********************************************************************************
   Function:
@@ -1455,33 +1450,9 @@ FILEIO_FILE_SYSTEM_TYPE FILEIO_FileSystemTypeGet (uint16_t driveId);
       Flash - 400 bytes (-Os setting)
 
     PIC24F speed estimates:
-      Search takes approximately 7 seconds per Gigabytes of drive space.  Speed
+      Search takes approximately 7 seconds per Gigabyte of drive space.  Speed
         will vary based on the number of sectors per cluster and the sector size.
   *********************************************************************************/
-void FILEIO_DrivePropertiesGet (FILEIO_DRIVE_PROPERTIES* properties, uint16_t driveId);
-
-/***************************************************************************
-    Function:
-        void FILEIO_ShortFileNameGet (FILEIO_OBJECT * filePtr, char * buffer)
-
-    Summary:
-        Obtains the short file name of an open file.
-
-    Description:
-        Obtains the short file name of an open file.
-
-    Precondition:
-        A drive must have been mounted by the FILEIO library and the file
-        being specified my be open.
-
-    Parameters:
-        filePtr - Pointer to an open file.
-        buffer - A buffer to store the null-terminated short file name. Must 
-            be large enough to contain at least 13 characters.
-
-    Returns:
-        None
-***************************************************************************/
-void FILEIO_ShortFileNameGet (FILEIO_OBJECT * filePtr, char * buffer);
+void FILEIO_DrivePropertiesGet (FILEIO_DRIVE_PROPERTIES* properties, char driveId);
 
 #endif

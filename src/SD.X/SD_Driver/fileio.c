@@ -19,10 +19,10 @@ please contact mla_licensing@microchip.com
 *******************************************************************************/
 //DOM-IGNORE-END
 
-#include "system_config.h"
+#include "fileio_config.h"
 #include "system.h"
-#include "fileio_lfn.h"
-#include "fileio_private_lfn.h"
+#include "fileio.h"
+#include "fileio_private.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -37,10 +37,8 @@ uint16_t ReadRam16bit (uint8_t * pBuffer, uint16_t index);
 
 FILEIO_DRIVE gDriveArray[FILEIO_CONFIG_MAX_DRIVES];
 uint8_t gDriveSlotOpen[FILEIO_CONFIG_MAX_DRIVES];
-
 FILEIO_TimestampGet timestampGet;
 
-uint16_t lfnBuffer[256];
 
 #if defined (__XC16__) || defined (__XC32__)
     #if defined (FILEIO_CONFIG_MULTIPLE_BUFFER_MODE_DISABLE)
@@ -124,13 +122,13 @@ bool FILEIO_MediaDetect (const FILEIO_DRIVE_CONFIG * driveConfig, void * mediaPa
     return (*driveConfig->funcMediaDetect)(mediaParameters);
 }
 
-FILEIO_DRIVE * FILEIO_CharToDrive (uint16_t driveId)
+FILEIO_DRIVE * FILEIO_CharToDrive (char c)
 {
     uint8_t i;
 
     for (i = 0; i < FILEIO_CONFIG_MAX_DRIVES; i++)
     {
-        if ((gDriveSlotOpen[i] == false) && (gDriveArray[i].driveId == driveId))
+        if ((gDriveSlotOpen[i] == false) && (gDriveArray[i].driveId == c))
         {
             return &gDriveArray[i];
         }
@@ -139,7 +137,7 @@ FILEIO_DRIVE * FILEIO_CharToDrive (uint16_t driveId)
     return NULL;
 }
 
-FILEIO_FILE_SYSTEM_TYPE FILEIO_FileSystemTypeGet (uint16_t driveId)
+FILEIO_FILE_SYSTEM_TYPE FILEIO_FileSystemTypeGet (char driveId)
 {
     FILEIO_DRIVE * drive = FILEIO_CharToDrive (driveId);
 
@@ -151,7 +149,7 @@ FILEIO_FILE_SYSTEM_TYPE FILEIO_FileSystemTypeGet (uint16_t driveId)
     return drive->type;
 }
 
-FILEIO_ERROR_TYPE FILEIO_DriveMount (uint16_t driveId, const FILEIO_DRIVE_CONFIG * driveConfig, void * mediaParameters)
+FILEIO_ERROR_TYPE FILEIO_DriveMount (char driveId, const FILEIO_DRIVE_CONFIG * driveConfig, void * mediaParameters)
 {
     FILEIO_ERROR_TYPE error = FILEIO_ERROR_NONE;
     FILEIO_DRIVE * drive;
@@ -185,7 +183,7 @@ FILEIO_ERROR_TYPE FILEIO_DriveMount (uint16_t driveId, const FILEIO_DRIVE_CONFIG
 #if defined (FILEIO_CONFIG_MULTIPLE_BUFFER_MODE_DISABLE)
     if (drive->bufferStatusPtr->driveOwner == drive)
     {
-        drive->bufferStatusPtr->driveOwnerdriveOwner = NULL;
+        drive->bufferStatusPtr->driveOwner = NULL;
     }
 #else
     bufferStatus[i].flags.dataBufferNeedsWrite = false;
@@ -607,7 +605,7 @@ FILEIO_ERROR_TYPE FILEIO_LoadBootSector (FILEIO_DRIVE * drive)
     return error;
 }
 
-int FILEIO_DriveUnmount (const uint16_t driveId)
+int FILEIO_DriveUnmount (const char driveId)
 {
     FILEIO_DRIVE * drive;
     uint8_t i;
@@ -660,20 +658,20 @@ int FILEIO_DriveUnmount (const uint16_t driveId)
     return FILEIO_RESULT_SUCCESS;
 }
 
-const uint16_t gShortFileNameCharacters[17] =
+const uint8_t gShortFileNameCharacters[17] =
 {
     '!', '#', '$', '%', '&', '\'', '(', ')', '-', '@', '^', '_', '`', '{', '}', '~', ' '
 };
 
-const uint16_t gLongFileNameCharacters[9] =
+const uint8_t gLongFileNameCharacters[9] =
 {
     '\\', '/', ':', '*', '?', '"', '<', '>', '|'
 };
 
-
-uint8_t FILEIO_FileNameTypeGet(const uint16_t * fileName, bool partialStringSearch)
+// TODO : Consider replacing this with a user-specified option in which they agree not to make any mistakes
+uint8_t FILEIO_FileNameTypeGet(const char * fileName, bool partialStringSearch)
 {
-    uint16_t c;
+    uint8_t c;
     uint8_t i;
     FILEIO_NAME_TYPE type = FILEIO_NAME_SHORT;
     bool foundRadix = false;
@@ -721,14 +719,14 @@ uint8_t FILEIO_FileNameTypeGet(const uint16_t * fileName, bool partialStringSear
                 else
                 {
                     // C could still be a special character
-                    for (i = 0; i < sizeof (gShortFileNameCharacters) / 2; i++)
+                    for (i = 0; i < sizeof (gShortFileNameCharacters); i++)
                     {
                         if (c == gShortFileNameCharacters[i])
                         {
                             break;
                         }
                     }
-                    if (i == sizeof (gShortFileNameCharacters) / 2)
+                    if (i == sizeof (gShortFileNameCharacters))
                     {
                         if (!partialStringSearch || ((c != '?') && (c != '*')))
                         {
@@ -755,7 +753,7 @@ uint8_t FILEIO_FileNameTypeGet(const uint16_t * fileName, bool partialStringSear
         }
         if (type == FILEIO_NAME_LONG)
         {
-            for (i = 0; i < sizeof (gLongFileNameCharacters) / 2; i++)
+            for (i = 0; i < sizeof (gLongFileNameCharacters); i++)
             {
                 if (c == gLongFileNameCharacters[i])
                 {
@@ -771,9 +769,9 @@ uint8_t FILEIO_FileNameTypeGet(const uint16_t * fileName, bool partialStringSear
     return type;
 }
 
-void FILEIO_FormatShortFileName (const uint16_t * fileName, FILEIO_OBJECT * filePtr)
+void FILEIO_FormatShortFileName (const char * fileName, FILEIO_OBJECT * filePtr)
 {
-    uint16_t c;
+    char c;
     uint8_t i = 0;
 
     while (((c = *fileName++) != '.') && (c != 0) && (c != FILEIO_CONFIG_DELIMITER))
@@ -798,12 +796,9 @@ void FILEIO_FormatShortFileName (const uint16_t * fileName, FILEIO_OBJECT * file
     {
         filePtr->name[i++] = 0x20;
     }
-
-    filePtr->lfnPtr = NULL;
 }
 
-
-int FILEIO_Open (FILEIO_OBJECT * filePtr, const uint16_t * fileName, uint16_t mode)
+int FILEIO_Open (FILEIO_OBJECT * filePtr, const char * fileName, uint16_t mode)
 {
     FILEIO_ERROR_TYPE error;
 #if !defined (FILEIO_CONFIG_WRITE_DISABLE)
@@ -814,12 +809,12 @@ int FILEIO_Open (FILEIO_OBJECT * filePtr, const uint16_t * fileName, uint16_t mo
     uint32_t currentCluster;
     uint16_t currentClusterOffset = 0;
 
-    fileName = FILEIO_CacheDirectory (&directory, (uint16_t *)fileName, false);
-
+    fileName = FILEIO_CacheDirectory (&directory, (char*)fileName, false);
+   
     if (fileName == NULL)
     {
         return FILEIO_RESULT_FAILURE;
-    }
+    }  
     
     currentCluster = directory.cluster;
 
@@ -854,17 +849,6 @@ int FILEIO_Open (FILEIO_OBJECT * filePtr, const uint16_t * fileName, uint16_t mo
         FILEIO_FormatShortFileName (fileName, filePtr);
         // Search in 'directory' for an entry matching filePtr->name, starting at entry 0 in directory->cluster and returning the result in filePtr
         error = FILEIO_FindShortFileName (&directory, filePtr, (uint8_t *)filePtr->name, &currentCluster, &currentClusterOffset, 0, 0, FILEIO_SEARCH_ENTRY_MATCH);
-    }
-    else if (fileNameType == FILEIO_NAME_LONG)
-    {
-        // Long file name
-        currentCluster = directory.cluster;
-        currentClusterOffset = 0;
-        // Search in 'directory' for an entry matching fileName, starting at entry 0 in directory->cluster and returning the short file name in filePtr.
-        // The long file name will be cached in lfnData
-        filePtr->lfnPtr = (uint16_t *)fileName;
-        filePtr->lfnLen = FILEIO_strlen16 ((uint16_t *)fileName);
-        error = FILEIO_FindLongFileName (&directory, filePtr, &currentCluster, &currentClusterOffset, 0, 0, FILEIO_SEARCH_ENTRY_MATCH);
     }
     else
     {
@@ -954,7 +938,7 @@ int FILEIO_Open (FILEIO_OBJECT * filePtr, const uint16_t * fileName, uint16_t mo
         }
     }
 
-    // Check to ensure no errors occured
+    // Check to ensure no errors occurred
     if (error != FILEIO_ERROR_NONE)
     {
         directory.drive->error = error;
@@ -1002,14 +986,14 @@ uint32_t FILEIO_FullClusterNumberGet (FILEIO_DIRECTORY_ENTRY * entry)
     return result;
 }
 
-uint16_t * FILEIO_CacheDirectory (FILEIO_DIRECTORY * dir, uint16_t * path, bool createDirectories)
+const char * FILEIO_CacheDirectory (FILEIO_DIRECTORY * dir, const char * path, bool createDirectories)
 {
     uint16_t pathLen;
 #if !defined (FILEIO_CONFIG_DIRECTORY_DISABLE)
     uint16_t i;
 #endif
 
-    pathLen = FILEIO_strlen16 ((uint16_t *)path);
+    pathLen = strlen (path);
 
     if (pathLen == 0)
     {
@@ -1076,7 +1060,7 @@ uint16_t * FILEIO_CacheDirectory (FILEIO_DIRECTORY * dir, uint16_t * path, bool 
 #endif
 
     // Find the next forward slash (indicates part of the path is a directory)
-    while ((i = FILEIO_FindNextDelimiter(path)) != -1)
+    while ((i = FILEIO_FindNextDelimiter(path)) != ((uint16_t)-1))
     {
         // If someone terminated a directory path with a delimiter, break out of the loop
         if (*(path + i) == FILEIO_CONFIG_DELIMITER)
@@ -1129,10 +1113,10 @@ uint16_t * FILEIO_CacheDirectory (FILEIO_DIRECTORY * dir, uint16_t * path, bool 
 }
 
 #if !defined (FILEIO_CONFIG_DIRECTORY_DISABLE)
-uint16_t FILEIO_FindNextDelimiter(const uint16_t * path)
+uint16_t FILEIO_FindNextDelimiter(const char * path)
 {
     uint16_t i = 0;
-    uint16_t c;
+    char c;
 
     while (((c = *path++) != 0) && (c != FILEIO_CONFIG_DELIMITER))
     {
@@ -1141,7 +1125,7 @@ uint16_t FILEIO_FindNextDelimiter(const uint16_t * path)
 
     if (c == 0)
     {
-        return -1;
+        return ((uint16_t)-1);
     }
     else
     {
@@ -1151,7 +1135,7 @@ uint16_t FILEIO_FindNextDelimiter(const uint16_t * path)
 #endif
 
 #if !defined (FILEIO_CONFIG_DIRECTORY_DISABLE)
-FILEIO_RESULT FILEIO_DirectoryChangeSingle (FILEIO_DIRECTORY * directory, uint16_t * path)
+FILEIO_RESULT FILEIO_DirectoryChangeSingle (FILEIO_DIRECTORY * directory, const char * path)
 {
     FILEIO_ERROR_TYPE error;
     uint8_t fileNameType;
@@ -1164,7 +1148,7 @@ FILEIO_RESULT FILEIO_DirectoryChangeSingle (FILEIO_DIRECTORY * directory, uint16
 
     if (fileNameType == FILEIO_NAME_INVALID)
     {
-		directory->drive->error = FILEIO_ERROR_INVALID_FILENAME;
+        directory->drive->error = FILEIO_ERROR_INVALID_FILENAME;
         return FILEIO_RESULT_FAILURE;
     }
     else if (fileNameType == FILEIO_NAME_SHORT)
@@ -1207,13 +1191,9 @@ FILEIO_RESULT FILEIO_DirectoryChangeSingle (FILEIO_DIRECTORY * directory, uint16
     else
     {
         // Long file name
-        currentCluster = directory->cluster;
-        currentClusterOffset = 0;
-        // Search in 'directory' for an entry matching fileName, starting at entry 0 in directory->cluster and returning the short file name in filePtr.
-        // The long file name will be cached in lfnData
-        filePtr->lfnPtr = path;
-        filePtr->lfnLen = FILEIO_lfnlen(path);
-        error = FILEIO_FindLongFileName (directory, filePtr, &currentCluster, &currentClusterOffset, 0, FILEIO_ATTRIBUTE_MASK, FILEIO_SEARCH_ENTRY_MATCH);
+		directory->drive->error = FILEIO_ERROR_INVALID_FILENAME;
+        return FILEIO_RESULT_FAILURE;
+
     }
 
     if (error == FILEIO_ERROR_NONE)
@@ -1232,7 +1212,7 @@ FILEIO_RESULT FILEIO_DirectoryChangeSingle (FILEIO_DIRECTORY * directory, uint16
 
 #if !defined (FILEIO_CONFIG_WRITE_DISABLE)
 #if !defined (FILEIO_CONFIG_DIRECTORY_DISABLE)
-FILEIO_RESULT FILEIO_DirectoryMakeSingle (FILEIO_DIRECTORY * directory, uint16_t * path)
+FILEIO_RESULT FILEIO_DirectoryMakeSingle (FILEIO_DIRECTORY * directory, const char * path)
 {
     FILEIO_ERROR_TYPE error;
     FILEIO_OBJECT file;
@@ -1266,8 +1246,9 @@ FILEIO_RESULT FILEIO_DirectoryMakeSingle (FILEIO_DIRECTORY * directory, uint16_t
     }
     else
     {
-        filePtr->lfnPtr = (uint16_t *)path;
-        filePtr->lfnLen = FILEIO_lfnlen ((uint16_t *)path);
+        // Long file name
+        directory->drive->error = FILEIO_ERROR_INVALID_FILENAME;
+        return FILEIO_RESULT_FAILURE;
     }
 
     if (FILEIO_DirectoryEntryCreate (filePtr, &entryOffset, FILEIO_ATTRIBUTE_DIRECTORY, true) != FILEIO_ERROR_NONE)
@@ -1471,16 +1452,6 @@ FILEIO_ERROR_TYPE FILEIO_DirectoryEntryCreate (FILEIO_OBJECT * filePtr, uint16_t
             cluster = 0x0000000;
         }
 
-        // Construct and populate the long file name entries
-        if (error == FILEIO_ERROR_NONE)
-        {
-            if (filePtr->lfnPtr != NULL)
-            {
-                error = FILEIO_DirectoryEntryLFNCreate (filePtr, entryHandle);
-            }
-        }
-
-        // Construct and populate the short file entry
         if (error == FILEIO_ERROR_NONE)
         {
             error = FILEIO_DirectoryEntryPopulate(filePtr, entryHandle, attributes, cluster);
@@ -1554,327 +1525,6 @@ uint32_t FILEIO_CreateFirstCluster (FILEIO_OBJECT * filePtr)
     return cluster;
 }
 #endif
-
-#if !defined (FILEIO_CONFIG_WRITE_DISABLE)
-FILEIO_ERROR_TYPE FILEIO_DirectoryEntryLFNCreate (FILEIO_OBJECT * filePtr, uint16_t * entryHandle)
-{
-    char * source;
-    uint8_t checksum = 0;
-    uint8_t i;
-    uint8_t remainder, fileEntryCount, sequenceNumber;
-    uint16_t length;
-    uint16_t * tempNamePtr;
-    bool firstLoop = true;
-    FILEIO_DIRECTORY_ENTRY_LFN * lfnEntry;
-    FILEIO_DIRECTORY directory;
-    FILEIO_ERROR_TYPE error = FILEIO_ERROR_NONE;
-    uint32_t currentCluster;
-    uint16_t currentClusterOffset;
-
-    if (!FILEIO_AliasLFN(filePtr))
-    {
-        return FILEIO_ERROR_FILENAME_EXISTS;
-    }
-
-    source = filePtr->name;
-
-    // Calculate the short file name checksum for this file
-    for (i = 11; i != 0; i--)
-    {
-        checksum = ((checksum & 1) ? 0x80 : 0) + (checksum >> 1) + *source++;
-    }
-
-    length = filePtr->lfnLen;
-
-    // Calculate the number of entries required for the given file name
-    remainder = length % FILEIO_FILE_NAME_UTF16_CHARS_IN_LFN_ENTRY;
-    fileEntryCount = length / FILEIO_FILE_NAME_UTF16_CHARS_IN_LFN_ENTRY;
-
-    if (remainder || (length < (FILEIO_FILE_NAME_UTF16_CHARS_IN_LFN_ENTRY)))
-    {
-        fileEntryCount++;
-        tempNamePtr = filePtr->lfnPtr + length - remainder;
-    }
-    else
-    {
-        tempNamePtr = filePtr->lfnPtr + length - FILEIO_FILE_NAME_UTF16_CHARS_IN_LFN_ENTRY;
-    }
-
-    if (remainder == 0)
-    {
-        remainder = FILEIO_FILE_NAME_UTF16_CHARS_IN_LFN_ENTRY;
-    }
-
-    // Calculate maximum sequence number for LFN root entries
-    sequenceNumber = fileEntryCount | 0x40;
-
-    directory.cluster = filePtr->baseClusterDir;
-    directory.drive = filePtr->disk;
-    currentCluster = directory.cluster;
-    currentClusterOffset = 0;
-
-    while (fileEntryCount)
-    {
-        lfnEntry = (FILEIO_DIRECTORY_ENTRY_LFN *)FILEIO_DirectoryEntryCache (&directory, &error, &currentCluster, &currentClusterOffset, *entryHandle);
-        
-        if (lfnEntry == NULL)
-        {
-            return FILEIO_ERROR_BAD_CACHE_READ;
-        }
-        
-        ((FILEIO_DRIVE *)filePtr->disk)->bufferStatusPtr->flags.dataBufferNeedsWrite = true;
-
-        lfnEntry->sequenceNumber = sequenceNumber--;
-        lfnEntry->attributes = FILEIO_ATTRIBUTE_LONG_NAME;
-        lfnEntry->type = 0;
-        lfnEntry->checksum = checksum;
-        lfnEntry->reserved0 = 0;
-
-        // Copy the name
-        if (firstLoop)
-        {
-            uint16_t tempArray[FILEIO_FILE_NAME_UTF16_CHARS_IN_LFN_ENTRY];
-
-            memcpy (tempArray, tempNamePtr, remainder << 1);
-            // If this name isn't an even multiple of FILEIO_NAME_NAME_UTF16_CHARS_IN_LFN_ENTRY, we need to null-terminate it
-            if (remainder != FILEIO_FILE_NAME_UTF16_CHARS_IN_LFN_ENTRY)
-            {
-                tempArray[remainder++] = 0x0000;
-            }
-
-            memset (tempArray + remainder, 0xFF, (FILEIO_FILE_NAME_UTF16_CHARS_IN_LFN_ENTRY - remainder) << 1);
-
-            memcpy (&lfnEntry->namePart1, tempArray, 10);
-            memcpy (&lfnEntry->namePart2, &tempArray[5], 12);
-            memcpy (&lfnEntry->namePart3, &tempArray[11], 4);
-
-            // Decrement tempNamePtr to the beginning of the next file entry
-            tempNamePtr -= FILEIO_FILE_NAME_UTF16_CHARS_IN_LFN_ENTRY;
-
-            firstLoop = false;
-            sequenceNumber &= (~0x40);
-        }
-        else
-        {
-            memcpy (&lfnEntry->namePart1, tempNamePtr, 10);
-            memcpy (&lfnEntry->namePart2, tempNamePtr + 5, 12);
-            memcpy (&lfnEntry->namePart3, tempNamePtr + 11, 4);
-            // Decrement tempNamePtr to the beginning of the next file entry
-            tempNamePtr -= FILEIO_FILE_NAME_UTF16_CHARS_IN_LFN_ENTRY;
-        }
-
-        *entryHandle = *entryHandle + 1;
-        fileEntryCount--;
-    }
-
-    // Store the next entry (the short file name entry) in the file pointer's entry field
-    filePtr->entry = *entryHandle;
-    
-    // Don't bother to force a write; the entries will get updated when the short file name entry is written
-    return error;
-}
-#endif
-
-#if !defined (FILEIO_CONFIG_WRITE_DISABLE)
-bool FILEIO_AliasLFN (FILEIO_OBJECT * filePtr)
-{
-    uint32_t loopIndex, loopIndexEnd;
-    int16_t   index1, extIndex, lfnIndex;
-    uint8_t  i, j;
-    uint8_t tempString[FILEIO_FILE_NAME_LENGTH_8P3_NO_RADIX];
-    uint16_t * templfnPtr;
-    uint16_t length;
-    FILEIO_DIRECTORY directory;
-    uint32_t currentCluster;
-    uint16_t currentClusterOffset;
-    bool forceTail = false;
-    uint8_t tailLen = 0;
-
-    templfnPtr = filePtr->lfnPtr;
-    length = filePtr->lfnLen;
-
-    // Initially fill the alias name with space characters
-    memset (filePtr->name, ' ', FILEIO_FILE_NAME_LENGTH_8P3_NO_RADIX);
-
-    // find the location where '.' is present
-    for(lfnIndex = length - 1; lfnIndex > 0; lfnIndex--)
-    {
-        if (templfnPtr[lfnIndex] == '.')
-        {
-            break;
-        }
-    }
-
-    index1 = lfnIndex + 1;
-    if(lfnIndex)
-    {
-        // Complete the extension part as per the FAT specifications
-        for(extIndex = 8, j = 0; (index1 < length) && (j < 3); index1++)
-        {
-            // Convert lower-case to upper-case
-            i = (uint8_t)templfnPtr[index1];
-            if ((i >= 0x61) && (i <= 0x7A))
-            {
-                filePtr->name[extIndex++] = i - 0x20;
-            }
-            else if (i == ' ')
-            {
-                continue;
-            }
-            else if ((i == 0x2B) || (i == 0x2C) || (i == 0x3B) ||
-                (i == 0x3D) || (i == 0x5B) || (i == 0x5D) ||
-                (templfnPtr[index1] > 0xFF))
-            {
-                filePtr->name[extIndex++] = '_';
-                forceTail = true;
-            }
-            else if (i == FILEIO_CONFIG_DELIMITER)
-            {
-                break;
-            }
-            else
-            {
-                filePtr->name[extIndex++] = i;
-            }
-
-            j++;
-        }
-
-        extIndex = lfnIndex;
-    }
-    else
-    {
-        extIndex = length;
-    }
-
-    // Fill the base part as per the FAT specifications
-    for(index1 = 0, j = 0; ((index1 < extIndex) && (j < 8)); index1++)
-    {
-        // Convert lower-case to upper-case
-        i = (uint8_t)templfnPtr[index1];
-        if ((i >= 0x61) && (i <= 0x7A))
-        {
-            filePtr->name[j] = i - 0x20;
-        }
-        else if ((i == ' ') || (i == '.'))
-        {
-            continue;
-        }
-        else if ((i == 0x2B) || (i == 0x2C) || (i == 0x3B) ||
-            (i == 0x3D) || (i == 0x5B) || (i == 0x5D) ||
-            (templfnPtr[index1] > 0xFF))
-        {
-            filePtr->name[j] = '_';
-            forceTail = true;
-        }
-        else
-        {
-            filePtr->name[j] = i;
-        }
-
-        j++;
-    }
-
-    filePtr->attributes = FILEIO_ATTRIBUTE_ARCHIVE;
-
-    // Check to see if we need to append a numeric index to the name
-
-    directory.cluster = filePtr->baseClusterDir;
-    directory.drive = filePtr->disk;
-    currentCluster = directory.cluster;
-    currentClusterOffset = 0;
-
-    // See if the current short file name exists or if we need to force a tail because our LFN contained unconvertable unicode characters
-    if (forceTail || (FILEIO_FindShortFileName (&directory, filePtr, (uint8_t *)&filePtr->name, &currentCluster, &currentClusterOffset, 0, 0, FILEIO_SEARCH_ENTRY_MATCH) == FILEIO_ERROR_NONE))
-    {
-        memcpy (tempString, &filePtr->name, FILEIO_FILE_NAME_LENGTH_8P3_NO_RADIX);
-
-        // The max number of name characters with a numeric index is 6
-        if (j > 6)
-        {
-            j = 6;
-        }
-
-        loopIndex = 1;
-        
-        // Outer loop - Adjust the length of the tail and add the '~' character
-        for ( ; j > 0; j--)
-        {
-            tempString[j] = '~';
-            switch (j)
-            {
-                case 6:
-                    tailLen = 2;
-                    loopIndexEnd = 10;
-                    break;
-                case 5:
-                    tailLen = 3;
-                    loopIndexEnd = 100;
-                    break;
-                case 4:
-                    tailLen = 4;
-                    loopIndexEnd = 1000;
-                    break;
-                case 3:
-                    tailLen = 5;
-                    loopIndexEnd = 10000;
-                    break;
-                case 2:
-                    tailLen = 6;
-                    loopIndexEnd = 100000;
-                    break;
-                case 1:
-                    tailLen = 7;
-                    loopIndexEnd = 1000000;
-                    break;
-            }
-
-            // Inner loop - increase the value of the numeric index until we find one that isn't taken
-            for ( ; loopIndex < loopIndexEnd; loopIndex++)
-            {
-                currentCluster = directory.cluster;
-                currentClusterOffset = 0;
-
-                switch (tailLen)
-                {
-                    case 7:
-                        tempString[2] = (loopIndex % 1000000)/100000 + '0';
-                    case 6:
-                        tempString[3] = (loopIndex % 100000)/10000 + '0';
-                    case 5:
-                        tempString[4] = (loopIndex % 10000)/1000 + '0';
-                    case 4:
-                        tempString[5] = (loopIndex % 1000)/100 + '0';
-                    case 3:
-                        tempString[6] = (loopIndex % (uint8_t)100)/10 + '0';
-                    case 2:
-                        tempString[7] = loopIndex % (uint8_t)10 + '0';
-                        break;
-                }
-
-                // See if the file is found
-                if(FILEIO_FindShortFileName (&directory, filePtr, tempString, &currentCluster, &currentClusterOffset, 0, 0, FILEIO_SEARCH_ENTRY_MATCH) == FILEIO_ERROR_DONE)
-                {
-                    memcpy (filePtr->name, tempString, FILEIO_FILE_NAME_LENGTH_8P3_NO_RADIX);
-                    return true;
-                    break;
-                }
-            }
-        }
-    }
-    else
-    {
-        return true;
-    }
-
-    return false;
-}
-#endif
-
-void FILEIO_ShortFileNameGet (FILEIO_OBJECT * filePtr, char * buffer)
-{
-    FILEIO_ShortFileNameConvert (buffer, filePtr->name);
-}
 
 #if !defined (FILEIO_CONFIG_WRITE_DISABLE)
 FILEIO_ERROR_TYPE FILEIO_DirectoryEntryPopulate(FILEIO_OBJECT * filePtr, uint16_t * entryHandle, uint8_t attributes, uint32_t cluster)
@@ -1964,19 +1614,7 @@ FILEIO_ERROR_TYPE FILEIO_DirectoryEntryFindEmpty (FILEIO_OBJECT * filePtr, uint1
     directory.drive = filePtr->disk;
     directory.cluster = filePtr->baseClusterDir;
 
-    if (filePtr->lfnPtr)
-    {
-        fileEntryCount = (filePtr->lfnLen / FILEIO_FILE_NAME_UTF16_CHARS_IN_LFN_ENTRY) + 1;
-        if ((filePtr->lfnLen % FILEIO_FILE_NAME_UTF16_CHARS_IN_LFN_ENTRY) ||
-                (filePtr->lfnLen < FILEIO_FILE_NAME_UTF16_CHARS_IN_LFN_ENTRY))
-        {
-            fileEntryCount++;
-        }
-    }
-    else
-    {
-        fileEntryCount = 1;
-    }
+    fileEntryCount = 1;
 
     tempHandle2 = *entryOffset;
 
@@ -3360,7 +2998,7 @@ bool FILEIO_Eof (FILEIO_OBJECT * filePtr)
 }
 
 #if !defined (FILEIO_CONFIG_WRITE_DISABLE)
-int FILEIO_Remove (const uint16_t * pathName)
+int FILEIO_Remove (const char * pathName)
 {
     FILEIO_OBJECT file;
     FILEIO_OBJECT * filePtr = &file;
@@ -3370,9 +3008,11 @@ int FILEIO_Remove (const uint16_t * pathName)
     uint8_t fileNameType;
     uint32_t currentCluster;
     uint16_t currentClusterOffset = 0;
-    uint16_t * fileName;
+    char * fileName;
 
-    fileName = (uint16_t *)FILEIO_CacheDirectory (&directory, (uint16_t *)pathName, false);
+    error = FILEIO_RESULT_SUCCESS;
+    
+    fileName = (char *)FILEIO_CacheDirectory (&directory, pathName, false);
 
     if (fileName == NULL)
     {
@@ -3392,7 +3032,7 @@ int FILEIO_Remove (const uint16_t * pathName)
 
     if ((fileNameType == FILEIO_NAME_INVALID) || (fileNameType == FILEIO_NAME_DOT))
     {
-        directory.drive->error = FILEIO_ERROR_INVALID_FILENAME;
+		directory.drive->error = FILEIO_ERROR_INVALID_FILENAME;
         return FILEIO_RESULT_FAILURE;
     }
     else if (fileNameType == FILEIO_NAME_SHORT)
@@ -3403,17 +3043,6 @@ int FILEIO_Remove (const uint16_t * pathName)
         FILEIO_FormatShortFileName (fileName, filePtr);
         // Search in 'directory' for an entry matching filePtr->name, starting at entry 0 in directory->cluster and returning the result in filePtr
         error = FILEIO_FindShortFileName (&directory, filePtr, (uint8_t *)filePtr->name, &currentCluster, &currentClusterOffset, 0, 0, FILEIO_SEARCH_ENTRY_MATCH);
-    }
-    else if (fileNameType == FILEIO_NAME_LONG)
-    {
-        // Long file name
-        currentCluster = directory.cluster;
-        currentClusterOffset = 0;
-        // Search in 'directory' for an entry matching fileName, starting at entry 0 in directory->cluster and returning the short file name in filePtr.
-        // The long file name will be cached in lfnData
-        filePtr->lfnPtr = (uint16_t *)fileName;
-        filePtr->lfnLen = FILEIO_strlen16 ((uint16_t *)fileName);
-        error = FILEIO_FindLongFileName (&directory, filePtr, &currentCluster, &currentClusterOffset, 0, 0, FILEIO_SEARCH_ENTRY_MATCH);
     }
 
     if (error == FILEIO_ERROR_NONE)
@@ -3429,7 +3058,7 @@ int FILEIO_Remove (const uint16_t * pathName)
         }
     }
 
-    // Check to ensure no errors occured
+    // Check to ensure no errors occurred
     if (error != FILEIO_ERROR_NONE)
     {
         directory.drive->error = error;
@@ -3441,7 +3070,7 @@ int FILEIO_Remove (const uint16_t * pathName)
 #endif
 
 #if !defined (FILEIO_CONFIG_WRITE_DISABLE)
-int FILEIO_Rename (const uint16_t * oldPathname, const uint16_t * newFilename)
+int FILEIO_Rename (const char * oldPathname, const char * newFilename)
 {
     FILEIO_OBJECT file;
     FILEIO_OBJECT * filePtr = &file;
@@ -3449,13 +3078,12 @@ int FILEIO_Rename (const uint16_t * oldPathname, const uint16_t * newFilename)
     FILEIO_DIRECTORY_ENTRY * entry;
     uint16_t entryHandle;
     FILEIO_DIRECTORY directory;
-    uint8_t oldFileNameType;
-    uint8_t newFileNameType;
+    uint8_t fileNameType;
     uint32_t currentCluster;
     uint16_t currentClusterOffset = 0;
-    uint16_t * oldFilename;
+    char * oldFilename;
 
-    oldFilename = FILEIO_CacheDirectory (&directory, (uint16_t *)oldPathname, false);
+    oldFilename = (char *)FILEIO_CacheDirectory (&directory, oldPathname, false);
 
     if (oldFilename == NULL)
     {
@@ -3472,14 +3100,14 @@ int FILEIO_Rename (const uint16_t * oldPathname, const uint16_t * newFilename)
     }
 
     // Check to see if the new filename already exists
-    newFileNameType = FILEIO_FileNameTypeGet(newFilename, false);
+    fileNameType = FILEIO_FileNameTypeGet(newFilename, false);
 
-    if ((newFileNameType == FILEIO_NAME_INVALID) || (newFileNameType == FILEIO_NAME_DOT))
+    if ((fileNameType == FILEIO_NAME_INVALID) || (fileNameType == FILEIO_NAME_DOT))
     {
         directory.drive->error = FILEIO_ERROR_INVALID_FILENAME;
         return FILEIO_RESULT_FAILURE;
     }
-    else if (newFileNameType == FILEIO_NAME_SHORT)
+    else if (fileNameType == FILEIO_NAME_SHORT)
     {
         currentCluster = directory.cluster;
         currentClusterOffset = 0;
@@ -3487,17 +3115,6 @@ int FILEIO_Rename (const uint16_t * oldPathname, const uint16_t * newFilename)
         FILEIO_FormatShortFileName (newFilename, filePtr);
         // Search in 'directory' for an entry matching filePtr->name, starting at entry 0 in directory->cluster and returning the result in filePtr
         error = FILEIO_FindShortFileName (&directory, filePtr, (uint8_t *)filePtr->name, &currentCluster, &currentClusterOffset, 0, 0, FILEIO_SEARCH_ENTRY_MATCH);
-    }
-    else if (newFileNameType == FILEIO_NAME_LONG)
-    {
-        // Long file name
-        currentCluster = directory.cluster;
-        currentClusterOffset = 0;
-        // Search in 'directory' for an entry matching fileName, starting at entry 0 in directory->cluster and returning the short file name in filePtr.
-        // The long file name will be cached in lfnData
-        filePtr->lfnPtr = (uint16_t *)newFilename;
-        filePtr->lfnLen = FILEIO_strlen16 ((uint16_t *)newFilename);
-        error = FILEIO_FindLongFileName (&directory, filePtr, &currentCluster, &currentClusterOffset, 0, 0, FILEIO_SEARCH_ENTRY_MATCH);
     }
 
     if (error == FILEIO_ERROR_NONE)
@@ -3507,17 +3124,17 @@ int FILEIO_Rename (const uint16_t * oldPathname, const uint16_t * newFilename)
     }
 
     // Try to find the old filename
-    oldFileNameType = FILEIO_FileNameTypeGet(oldFilename, false);
+    fileNameType = FILEIO_FileNameTypeGet(oldFilename, false);
 
     currentClusterOffset = 0;
     currentCluster = directory.cluster;
 
-    if ((oldFileNameType == FILEIO_NAME_INVALID) || (oldFileNameType == FILEIO_NAME_DOT))
+    if ((fileNameType == FILEIO_NAME_INVALID) || (fileNameType == FILEIO_NAME_DOT))
     {
-        directory.drive->error = FILEIO_ERROR_INVALID_FILENAME;
+		directory.drive->error = FILEIO_ERROR_INVALID_FILENAME;
         return FILEIO_RESULT_FAILURE;
     }
-    else if (oldFileNameType == FILEIO_NAME_SHORT)
+    else if (fileNameType == FILEIO_NAME_SHORT)
     {
         currentCluster = directory.cluster;
         currentClusterOffset = 0;
@@ -3525,17 +3142,6 @@ int FILEIO_Rename (const uint16_t * oldPathname, const uint16_t * newFilename)
         FILEIO_FormatShortFileName (oldFilename, filePtr);
         // Search in 'directory' for an entry matching filePtr->name, starting at entry 0 in directory->cluster and returning the result in filePtr
         error = FILEIO_FindShortFileName (&directory, filePtr, (uint8_t *)filePtr->name, &currentCluster, &currentClusterOffset, 0, 0, FILEIO_SEARCH_ENTRY_MATCH);
-    }
-    else if (oldFileNameType == FILEIO_NAME_LONG)
-    {
-        // Long file name
-        currentCluster = directory.cluster;
-        currentClusterOffset = 0;
-        // Search in 'directory' for an entry matching fileName, starting at entry 0 in directory->cluster and returning the short file name in filePtr.
-        // The long file name will be cached in lfnData
-        filePtr->lfnPtr = (uint16_t *)oldFilename;
-        filePtr->lfnLen = FILEIO_strlen16 ((uint16_t *)oldFilename);
-        error = FILEIO_FindLongFileName (&directory, filePtr, &currentCluster, &currentClusterOffset, 0, 0, FILEIO_SEARCH_ENTRY_MATCH);
     }
 
     // Check to ensure that the old file was found
@@ -3545,49 +3151,12 @@ int FILEIO_Rename (const uint16_t * oldPathname, const uint16_t * newFilename)
         return FILEIO_RESULT_FAILURE;
     }
 
+    // The file was found.  Replace the name.
     entryHandle = filePtr->entry;
 
-    // The file was found.  Replace the name.
-    if ((oldFileNameType == FILEIO_NAME_SHORT) && (newFileNameType == FILEIO_NAME_SHORT))
-    {
-        entry = FILEIO_DirectoryEntryCache (&directory, &error, &currentCluster, &currentClusterOffset, entryHandle);
-        FILEIO_FormatShortFileName (newFilename, filePtr);
-        memcpy (entry->name, filePtr->name, FILEIO_FILE_NAME_LENGTH_8P3_NO_RADIX);
-    }
-    else
-    {
-        uint32_t oldCluster = filePtr->firstCluster;
-        uint32_t oldSize = filePtr->size;
-
-        // Erase the previous entry
-        if (FILEIO_EraseFile (filePtr, &entryHandle, false) != FILEIO_ERROR_NONE)
-        {
-            directory.drive->error = FILEIO_ERROR_ERASE_FAIL;
-            return FILEIO_RESULT_FAILURE;
-        }
-
-        if (newFileNameType == FILEIO_NAME_SHORT)
-        {
-            // Old file name was long, new file name is short
-            FILEIO_FormatShortFileName (newFilename, filePtr);
-            filePtr->lfnPtr = NULL;
-        }
-        else
-        {
-            // Old file name was short or long, new file name is long
-            filePtr->lfnPtr = (uint16_t *)newFilename;
-            filePtr->lfnLen = FILEIO_strlen16 ((uint16_t *)newFilename);
-        }
-
-        error = FILEIO_DirectoryEntryCreate (filePtr, &entryHandle, filePtr->attributes, false);
-
-        entry = FILEIO_DirectoryEntryCache (&directory, &error, &currentCluster, &currentClusterOffset, entryHandle);
-
-        // Store the existing file's location and size in the new entry
-        entry->firstClusterLow = (oldCluster & 0x0000FFFF);
-        entry->firstClusterHigh = (oldCluster & 0x0FFF0000) >> 16;
-        entry->fileSize = oldSize;
-    }
+    entry = FILEIO_DirectoryEntryCache (&directory, &error, &currentCluster, &currentClusterOffset, entryHandle);
+    FILEIO_FormatShortFileName (newFilename, filePtr);
+    memcpy (entry->name, filePtr->name, FILEIO_FILE_NAME_LENGTH_8P3_NO_RADIX);
 
     directory.drive->bufferStatusPtr->flags.dataBufferNeedsWrite = true;
 
@@ -3602,7 +3171,7 @@ int FILEIO_Rename (const uint16_t * oldPathname, const uint16_t * newFilename)
 }
 #endif
 
-FILEIO_ERROR_TYPE FILEIO_ErrorGet (uint16_t driveId)
+FILEIO_ERROR_TYPE FILEIO_ErrorGet (char driveId)
 {
     FILEIO_DRIVE * drive = FILEIO_CharToDrive (driveId);
 
@@ -3616,7 +3185,7 @@ FILEIO_ERROR_TYPE FILEIO_ErrorGet (uint16_t driveId)
     }
 }
 
-void FILEIO_ErrorClear (uint16_t driveId)
+void FILEIO_ErrorClear (char driveId)
 {
     FILEIO_DRIVE * drive = FILEIO_CharToDrive (driveId);
 
@@ -3655,20 +3224,20 @@ int FILEIO_PutChar (char c, FILEIO_OBJECT * handle)
 #endif
 
 #if !defined (FILEIO_CONFIG_DIRECTORY_DISABLE)
-int FILEIO_DirectoryChange (const uint16_t * path)
+int FILEIO_DirectoryChange (const char * path)
 {
-    uint16_t * finalPath;
+    char * finalPath;
     FILEIO_DIRECTORY directory;
     uint16_t pathLen;
 
-    finalPath = FILEIO_CacheDirectory (&directory, (uint16_t *)path, false);
+    finalPath = (char *)FILEIO_CacheDirectory (&directory, path, false);
 
     if (finalPath == NULL)
     {
         return FILEIO_RESULT_FAILURE;
     }
 
-    pathLen = FILEIO_strlen16 (finalPath);
+    pathLen = strlen (finalPath);
 
     if (pathLen != 0)
     {
@@ -3689,20 +3258,20 @@ int FILEIO_DirectoryChange (const uint16_t * path)
 
 #if !defined (FILEIO_CONFIG_WRITE_DISABLE)
 #if !defined (FILEIO_CONFIG_DIRECTORY_DISABLE)
-int FILEIO_DirectoryMake (const uint16_t * path)
+int FILEIO_DirectoryMake (const char * path)
 {
-    uint16_t * finalPath;
+    char * finalPath;
     FILEIO_DIRECTORY directory;
     uint16_t pathLen;
 
-    finalPath = FILEIO_CacheDirectory (&directory, (uint16_t *)path, true);
+    finalPath = (char *)FILEIO_CacheDirectory (&directory, path, true);
 
     if (finalPath == NULL)
     {
         return FILEIO_RESULT_FAILURE;
     }
 
-    pathLen = FILEIO_strlen16 (finalPath);
+    pathLen = strlen (finalPath);
 
     if (pathLen != 0)
     {
@@ -3730,9 +3299,9 @@ int FILEIO_DirectoryMake (const uint16_t * path)
 
 #if !defined (FILEIO_CONFIG_WRITE_DISABLE)
 #if !defined (FILEIO_CONFIG_DIRECTORY_DISABLE)
-int FILEIO_DirectoryRemove (const uint16_t * path)
+int FILEIO_DirectoryRemove (const char * path)
 {
-    uint16_t * finalPath;
+    char * finalPath;
     FILEIO_DIRECTORY_ENTRY * entry;
     FILEIO_ERROR_TYPE error;
     FILEIO_DIRECTORY directory;
@@ -3742,7 +3311,7 @@ int FILEIO_DirectoryRemove (const uint16_t * path)
     uint16_t currentClusterOffset = 0;
     uint16_t entryOffset = 2;
 
-    finalPath = FILEIO_CacheDirectory (&directory, (uint16_t *)path, false);
+    finalPath = (char *)FILEIO_CacheDirectory (&directory, path, false);
 
     memcpy (&deletedDirectory, &directory, sizeof (FILEIO_DIRECTORY));
 
@@ -3757,7 +3326,7 @@ int FILEIO_DirectoryRemove (const uint16_t * path)
     }
 
     // Change to the final directory (if the user didn't terminate the path with a delimiter)
-    pathLen = FILEIO_strlen16 (finalPath);
+    pathLen = strlen (finalPath);
     if (pathLen != 0)
     {
         if (FILEIO_DirectoryChangeSingle (&deletedDirectory, finalPath) != FILEIO_RESULT_SUCCESS)
@@ -3795,13 +3364,15 @@ int FILEIO_DirectoryRemove (const uint16_t * path)
 
 #if !defined (FILEIO_CONFIG_WRITE_DISABLE)
 #if !defined (FILEIO_CONFIG_DIRECTORY_DISABLE)
-int FILEIO_DirectoryRemoveSingle (FILEIO_DIRECTORY * directory, uint16_t * path)
+int FILEIO_DirectoryRemoveSingle (FILEIO_DIRECTORY * directory, char * path)
 {
     FILEIO_OBJECT file;
     FILEIO_ERROR_TYPE error;
     uint8_t fileNameType;
     uint32_t currentCluster = directory->cluster;
     uint16_t currentClusterOffset = 0;
+    
+    error = FILEIO_RESULT_SUCCESS;
 
     fileNameType = FILEIO_FileNameTypeGet(path, false);
 
@@ -3818,18 +3389,6 @@ int FILEIO_DirectoryRemoveSingle (FILEIO_DIRECTORY * directory, uint16_t * path)
         FILEIO_FormatShortFileName (path, &file);
         // Search in 'directory' for an entry matching filePtr->name, starting at entry 0 in directory->cluster and returning the result in filePtr
         error = FILEIO_FindShortFileName (directory, &file, (uint8_t *)file.name, &currentCluster, &currentClusterOffset, 0, FILEIO_ATTRIBUTE_MASK, FILEIO_SEARCH_ENTRY_MATCH);
-    }
-    else if (fileNameType == FILEIO_NAME_LONG)
-    {
-        // Long file name
-        currentCluster = directory->cluster;
-        currentClusterOffset = 0;
-        // Search in 'directory' for an entry matching fileName, starting at entry 0 in directory->cluster and returning the short file name in filePtr.
-        // The long file name will be cached in lfnData
-        file.lfnPtr = (uint16_t *)path;
-        file.lfnLen = FILEIO_strlen16 ((uint16_t *)path);
-        error = FILEIO_FindLongFileName (directory, &file, &currentCluster, &currentClusterOffset, 0, 0, FILEIO_SEARCH_ENTRY_MATCH);
-
     }
 
     if (error != FILEIO_ERROR_NONE)
@@ -3856,12 +3415,12 @@ int FILEIO_DirectoryRemoveSingle (FILEIO_DIRECTORY * directory, uint16_t * path)
 #endif
 
 #if !defined (FILEIO_CONFIG_DIRECTORY_DISABLE)
-uint16_t FILEIO_DirectoryGetCurrent (uint16_t * buffer, uint16_t size)
+uint16_t FILEIO_DirectoryGetCurrent (char * buffer, uint16_t size)
 {
-    uint16_t * bufferEnd;
+    char * bufferEnd;
     FILEIO_DRIVE * drive = globalParameters.currentWorkingDirectory.drive;
     uint32_t cluster = globalParameters.currentWorkingDirectory.cluster;
-    uint32_t currentCluster, currentClusterTemp;
+    uint32_t currentCluster;
     uint16_t currentClusterOffset;
     uint16_t entryOffset;
     FILEIO_DIRECTORY directory;
@@ -3869,13 +3428,10 @@ uint16_t FILEIO_DirectoryGetCurrent (uint16_t * buffer, uint16_t size)
     FILEIO_ERROR_TYPE error;
     uint32_t tempCluster;
     int16_t i = 0, index = 0, tempIndex;
-    int16_t j;
+    signed char j;
     bool bufferOverflow = false;
     char aChar;
     uint16_t charCount = 0;
-    const uint16_t dotdotPath[3] = {'.', '.', 0};
-    uint8_t checksum;
-    uint8_t * source;
 
     memcpy (&directory, &globalParameters.currentWorkingDirectory, sizeof (FILEIO_DIRECTORY));
 
@@ -3891,7 +3447,6 @@ uint16_t FILEIO_DirectoryGetCurrent (uint16_t * buffer, uint16_t size)
     // Set up the return value
     if ((buffer == NULL) || (size == 0))
     {
-        drive->error = FILEIO_ERROR_INVALID_ARGUMENT;
         return 0;
     }
 
@@ -3901,7 +3456,7 @@ uint16_t FILEIO_DirectoryGetCurrent (uint16_t * buffer, uint16_t size)
     while ((cluster != 0) && (cluster != drive->firstRootCluster))
     {
         // Change to parent directory
-        if (FILEIO_DirectoryChangeSingle(&directory, (uint16_t *)dotdotPath) == FILEIO_RESULT_FAILURE)
+        if (FILEIO_DirectoryChangeSingle(&directory, "..") == FILEIO_RESULT_FAILURE)
         {
             drive->error = FILEIO_ERROR_DIR_NOT_FOUND;
             return 0;
@@ -3922,12 +3477,13 @@ uint16_t FILEIO_DirectoryGetCurrent (uint16_t * buffer, uint16_t size)
 
         do
         {
-            entry = FILEIO_DirectoryEntryCache (&directory, &error, &currentCluster, &currentClusterOffset, entryOffset++);
-            if (((tempCluster = FILEIO_FullClusterNumberGet(entry)) == cluster) && ((uint8_t)entry->name[0] != FILEIO_DIRECTORY_ENTRY_DELETED)&& (entry->attributes != FILEIO_ATTRIBUTE_LONG_NAME))
+            entry = FILEIO_DirectoryEntryCache (&directory, &error, &currentCluster, &currentClusterOffset, entryOffset);
+            if ((tempCluster = FILEIO_FullClusterNumberGet(entry)) == cluster)
             {
                 break;
             }
-        } while ((entry != NULL) && (entry->name[0] != FILEIO_DIRECTORY_ENTRY_EMPTY));
+            entryOffset++;
+        } while (((entry != NULL) && (entry->name[0] != FILEIO_DIRECTORY_ENTRY_EMPTY)) ||  (entry->attributes == FILEIO_ATTRIBUTE_LONG_NAME));
 
         if (tempCluster != cluster)
         {
@@ -3937,88 +3493,53 @@ uint16_t FILEIO_DirectoryGetCurrent (uint16_t * buffer, uint16_t size)
 
         cluster = directory.cluster;
 
-        checksum = 0;
-        source = (uint8_t *)entry->name;
-
-        for (i = 11; i != 0; i--)
+        // We have found our directory in the parent directory.  Copy the name into the buffer (backwards)
+        // Copy the extension.
+        j = 10;
+        while (entry->name[j] == 0x20)
         {
-            checksum = ((checksum & 1) ? 0x80 : 0) + (checksum >> 1) + *source++;
+            j--;
         }
-
-        currentClusterTemp = currentCluster;
-        if (FILEIO_LongFileNameCache(&directory, entryOffset - 1, currentCluster, checksum) == FILEIO_LFN_SUCCESS)
+        if (j >= 8)
         {
-            // The long file name is cached
-            // Copy it backwards into the buffer
-            j = FILEIO_strlen16 (lfnBuffer);
-            charCount += j;
-            for (j -= 1; j >= 0; j--)
-            {
-                *(buffer + index++) = lfnBuffer[j];
-                if (index == size)
-                {
-                    index = 0;
-                    bufferOverflow = true;
-                }
-            }
-        }
-        else
-        {
-            // There's no long file name entry associated with this directory
-            // Copy and pad the short file name
-
-            // Ensure that the original entry is still cached
-            currentCluster = currentClusterTemp;
-            entry = FILEIO_DirectoryEntryCache (&directory, &error, &currentCluster, &currentClusterOffset, entryOffset - 1);
-
-            // We have found our directory in the parent directory.  Copy the name into the buffer (backwards)
-            // Copy the extension.
-            j = 10;
-            while (entry->name[j] == 0x20)
-            {
-                j--;
-            }
-            if (j >= 8)
-            {
-                charCount += (j - 8) + 1;
-                while (j >= 8)
-                {
-                    *(buffer + index++) = entry->name[j--];
-                    // This is a circular buffer
-                    // Any unaccomadatable values will be overwritten
-                    if (index == size)
-                    {
-                        index = 0;
-                        bufferOverflow = true;
-                    }
-                }
-
-                charCount++;
-                *(buffer + index++) = '.';
-                if (index == size)
-                {
-                    index = 0;
-                    bufferOverflow = true;
-                }
-            }
-
-            // Copy the name
-            while (entry->name[j] == 0x20)
-            {
-                j--;
-            }
-
-            charCount += j + 1;
-            while (j >= 0)
+            charCount += (j - 8) + 1;
+            while (j >= 8)
             {
                 *(buffer + index++) = entry->name[j--];
                 // This is a circular buffer
-                // Any unnecessary values will be overwritten
+                // Any unaccomadatable values will be overwritten
                 if (index == size)
                 {
                     index = 0;
                     bufferOverflow = true;
                 }
+            }
+
+            charCount++;
+            *(buffer + index++) = '.';
+            if (index == size)
+            {
+                index = 0;
+                bufferOverflow = true;
+            }
+        }
+
+        // Copy the name
+        while (entry->name[j] == 0x20)
+        {
+            j--;
+        }
+
+        charCount += j + 1;
+        while (j >= 0)
+        {
+            *(buffer + index++) = entry->name[j--];
+            // This is a circular buffer
+            // Any unnecessary values will be overwritten
+            if (index == size)
+            {
+                index = 0;
+                bufferOverflow = true;
             }
         }
 
@@ -4111,17 +3632,19 @@ uint16_t FILEIO_DirectoryGetCurrent (uint16_t * buffer, uint16_t size)
 #endif
 
 #if !defined (FILEIO_CONFIG_SEARCH_DISABLE)
-int FILEIO_Find (const uint16_t * fileName, unsigned int attr, FILEIO_SEARCH_RECORD * record, bool newSearch)
+int FILEIO_Find (const char * fileName, unsigned int attr, FILEIO_SEARCH_RECORD * record, bool newSearch)
 {
     FILEIO_DIRECTORY directory;
     uint8_t fileNameType;
     FILEIO_ERROR_TYPE error;
     FILEIO_OBJECT file;
-    uint16_t * fileWithoutDirectory;
+    char * fileWithoutDirectory;
 
+    error = FILEIO_RESULT_SUCCESS;
+    
     if (newSearch)
     {
-        fileWithoutDirectory = FILEIO_CacheDirectory (&directory, (uint16_t *)fileName, false);
+        fileWithoutDirectory = (char *)FILEIO_CacheDirectory (&directory, fileName, false);
 
         if (fileWithoutDirectory == NULL)
         {
@@ -4149,14 +3672,14 @@ int FILEIO_Find (const uint16_t * fileName, unsigned int attr, FILEIO_SEARCH_REC
         }
 #endif
 
-        fileWithoutDirectory = (uint16_t *)fileName + record->pathOffset;
+        fileWithoutDirectory = (char *)fileName + record->pathOffset;
     }
 
     fileNameType = FILEIO_FileNameTypeGet(fileWithoutDirectory, true);
 
     if ((fileNameType == FILEIO_NAME_INVALID) || (fileNameType == FILEIO_NAME_DOT))
     {
-        directory.drive->error = FILEIO_ERROR_INVALID_FILENAME;
+		directory.drive->error = FILEIO_ERROR_INVALID_FILENAME;
         return FILEIO_RESULT_FAILURE;
     }
     else if (fileNameType == FILEIO_NAME_SHORT)
@@ -4165,15 +3688,6 @@ int FILEIO_Find (const uint16_t * fileName, unsigned int attr, FILEIO_SEARCH_REC
         FILEIO_FormatShortFileName (fileWithoutDirectory, &file);
         // Search in 'directory' for an entry matching filePtr->name, starting at entry 0 in directory->cluster and returning the result in filePtr
         error = FILEIO_FindShortFileName (&directory, &file, (uint8_t *)&file.name, &record->currentDirCluster, &record->currentClusterOffset, record->currentEntryOffset, attr, FILEIO_SEARCH_PARTIAL_STRING_SEARCH | FILEIO_SEARCH_ENTRY_ATTRIBUTES);
-    }
-    else if (fileNameType == FILEIO_NAME_LONG)
-    {
-        // Long file name
-        // Search in 'directory' for an entry matching fileName, starting at entry 0 in directory->cluster and returning the short file name in filePtr.
-        // The long file name will be cached in lfnBuffer
-        file.lfnPtr = (uint16_t *)fileWithoutDirectory;
-        file.lfnLen = FILEIO_strlen16 ((uint16_t *)fileWithoutDirectory);
-        error = FILEIO_FindLongFileName (&directory, &file, &record->currentDirCluster, &record->currentClusterOffset, record->currentEntryOffset, attr, FILEIO_SEARCH_PARTIAL_STRING_SEARCH | FILEIO_SEARCH_ENTRY_ATTRIBUTES);
     }
 
     if (error != FILEIO_ERROR_NONE)
@@ -4195,64 +3709,6 @@ int FILEIO_Find (const uint16_t * fileName, unsigned int attr, FILEIO_SEARCH_REC
     return FILEIO_RESULT_SUCCESS;
 }
 #endif
-
-#if !defined (FILEIO_CONFIG_SEARCH_DISABLE)
-int FILEIO_LongFileNameGet (FILEIO_SEARCH_RECORD * record, uint16_t * buffer, uint16_t length)
-{
-    uint32_t currentCluster = record->currentDirCluster;
-    uint16_t currentClusterOffset = record->currentClusterOffset;
-    uint16_t entryOffset = record->currentEntryOffset - 1;
-    FILEIO_DIRECTORY_ENTRY * entry;
-    FILEIO_ERROR_TYPE error = FILEIO_ERROR_NONE;
-    FILEIO_DIRECTORY directory;
-    uint8_t checksum = 0;
-    uint8_t * source;
-    uint16_t i;
-
-    directory.cluster = record->baseDirCluster;
-    directory.drive = FILEIO_CharToDrive(record->driveId);
-
-    if (directory.drive == NULL)
-    {
-        globalParameters.currentWorkingDirectory.drive->error = FILEIO_ERROR_INVALID_ARGUMENT;
-        return FILEIO_RESULT_FAILURE;
-    }
-
-    entry = FILEIO_DirectoryEntryCache (&directory, &error, &currentCluster, &currentClusterOffset, entryOffset);
-    if ((entry == NULL) || (error != FILEIO_ERROR_NONE))
-    {
-        directory.drive->error = error;
-        return FILEIO_RESULT_FAILURE;
-    }
-
-    checksum = 0;
-    source = (uint8_t *)entry->name;
-
-    for (i = 11; i != 0; i--)
-    {
-        checksum = ((checksum & 1) ? 0x80 : 0) + (checksum >> 1) + *source++;
-    }
-
-    if (FILEIO_LongFileNameCache(&directory, entryOffset, currentCluster, checksum) == FILEIO_LFN_SUCCESS)
-    {
-        i = FILEIO_strlen16 (lfnBuffer);
-        if (i < length)
-        {
-            length = i;
-        }
-
-        memcpy (buffer, lfnBuffer, (length + 1) << 1);
-
-        return FILEIO_RESULT_SUCCESS;
-    }
-    else
-    {
-        directory.drive->error = FILEIO_ERROR_NO_LONG_FILE_NAME;
-        return FILEIO_RESULT_FAILURE;
-    }
-}
-#endif
-
 
 #if !defined (FILEIO_CONFIG_FORMAT_DISABLE)
 #if !defined (FILEIO_CONFIG_WRITE_DISABLE)
@@ -5079,7 +4535,7 @@ int FILEIO_Format (FILEIO_DRIVE_CONFIG * config, void * mediaParameters, FILEIO_
 #endif
 
 #if !defined (FILEIO_CONFIG_DRIVE_PROPERTIES_DISABLE)
-void FILEIO_DrivePropertiesGet(FILEIO_DRIVE_PROPERTIES * properties, uint16_t driveId)
+void FILEIO_DrivePropertiesGet(FILEIO_DRIVE_PROPERTIES * properties, char driveId)
 {
     uint8_t i;
     uint32_t value = 0x0;
@@ -5234,248 +4690,6 @@ int FILEIO_GetSingleBuffer (FILEIO_DRIVE * drive)
     return FILEIO_RESULT_SUCCESS;
 }
 #endif
-
-FILEIO_ERROR_TYPE FILEIO_FindLongFileName (FILEIO_DIRECTORY * directory, FILEIO_OBJECT * filePtr, uint32_t * currentCluster, uint16_t * currentClusterOffset, uint16_t entryOffset, uint16_t attributes, FILEIO_SEARCH_TYPE mode)
-{
-    FILEIO_ERROR_TYPE error = FILEIO_ERROR_NONE;
-    FILEIO_DIRECTORY_ENTRY * entry;
-    uint8_t checksum, i;
-    uint8_t * source;
-    uint32_t currentClusterTemp;
-    uint16_t currentClusterOffsetTemp;
-
-    if (*currentCluster == 0)
-    {
-        *currentCluster = directory->drive->firstRootCluster;
-    }
-    
-    while(1)
-    {
-        do
-        {
-            entry = FILEIO_DirectoryEntryCache (directory, &error, currentCluster, currentClusterOffset, entryOffset);
-            if (error == FILEIO_ERROR_DONE)
-            {
-                break;
-            }
-            else if (error == FILEIO_ERROR_BAD_CACHE_READ)
-            {
-                directory->drive->error = FILEIO_ERROR_BAD_CACHE_READ;
-                return error;
-            }
-
-            entryOffset++;
-        } while (((entry->attributes == FILEIO_ATTRIBUTE_LONG_NAME) || (entry->attributes == FILEIO_ATTRIBUTE_VOLUME) || (((uint8_t)entry->name[0]) == FILEIO_DIRECTORY_ENTRY_DELETED)) && (entry->name[0] != FILEIO_DIRECTORY_ENTRY_EMPTY));
-
-        if ((error == FILEIO_ERROR_DONE) || (entry->name[0] == FILEIO_DIRECTORY_ENTRY_EMPTY))
-        {
-            return FILEIO_ERROR_DONE;
-        }
-
-        currentClusterTemp = *currentCluster;
-        currentClusterOffsetTemp = *currentClusterOffset;
-
-        // Valid file entry was found
-        if (((mode & FILEIO_SEARCH_ENTRY_ATTRIBUTES) != FILEIO_SEARCH_ENTRY_ATTRIBUTES) || ((entry->attributes & attributes) == entry->attributes))
-        {
-            checksum = 0;
-            source = (uint8_t *)entry->name;
-
-            for (i = 11; i != 0; i--)
-            {
-                checksum = ((checksum & 1) ? 0x80 : 0) + (checksum >> 1) + *source++;
-            }
-
-            if (FILEIO_LongFileNameCache(directory, entryOffset - 1, *currentCluster, checksum) == FILEIO_LFN_SUCCESS)
-            {
-                // File's attributes are valid or we aren't trying to match attributes
-                if (FILEIO_LongFileNameCompare (filePtr->lfnPtr, mode) == true)
-                {
-                    // Recache the short file name entry, just in case the LFN entry spans a cluster boundary
-                    entry = FILEIO_DirectoryEntryCache (directory, &error, &currentClusterTemp, &currentClusterOffsetTemp, entryOffset - 1);
-
-                    // Found a match.  Fill the result object with the file data
-                    memcpy (filePtr->name, entry->name, FILEIO_FILE_NAME_LENGTH_8P3_NO_RADIX);
-                    filePtr->disk = directory->drive;
-                    filePtr->firstCluster = FILEIO_FullClusterNumberGet (entry);
-                    filePtr->currentCluster = filePtr->firstCluster;
-                    filePtr->currentSector = 0;
-                    filePtr->currentOffset = 0;
-                    filePtr->absoluteOffset = 0;
-                    filePtr->size = entry->fileSize;
-                    filePtr->attributes = entry->attributes;
-                    if ((filePtr->attributes & FILEIO_ATTRIBUTE_DIRECTORY) == FILEIO_ATTRIBUTE_DIRECTORY)
-                    {
-                        filePtr->timeMs = entry->createTimeMs;
-                        filePtr->time = entry->createTime;
-                        filePtr->date = entry->createDate;
-                    }
-                    else
-                    {
-                        filePtr->time = entry->writeTime;
-                        filePtr->date = entry->writeDate;
-                    }
-                    filePtr->entry = --entryOffset;
-                    filePtr->baseClusterDir = directory->cluster;
-                    filePtr->currentClusterDir = directory->cluster;
-
-                    return FILEIO_ERROR_NONE;
-                }
-            }
-        }
-    }
-}
-
-FILEIO_LFN_ERROR FILEIO_LongFileNameCache (FILEIO_DIRECTORY * directory, uint16_t shortEntryOffset, uint32_t currentCluster, uint8_t checksum)
-{
-    uint16_t i = 0;
-    FILEIO_DIRECTORY_ENTRY_LFN * lfnEntry;
-    uint16_t entryOffset;
-    FILEIO_ERROR_TYPE error = FILEIO_ERROR_NONE;
-    uint16_t currentClusterOffset = shortEntryOffset / FILEIO_DIRECTORY_ENTRIES_PER_SECTOR;
-    currentClusterOffset /= directory->drive->sectorsPerCluster;
-
-    if (shortEntryOffset == 0)
-    {
-        return FILEIO_LFN_NONE;
-    }
-
-    entryOffset = shortEntryOffset - 1;
-
-    lfnEntry = (FILEIO_DIRECTORY_ENTRY_LFN *)FILEIO_DirectoryEntryCache (directory, &error, &currentCluster, &currentClusterOffset, entryOffset);
-
-    if ((lfnEntry->attributes != FILEIO_ATTRIBUTE_LONG_NAME) || (lfnEntry->checksum != checksum))
-    {
-        return FILEIO_LFN_NONE;
-    }
-
-    while ((error == FILEIO_ERROR_NONE) && (lfnEntry->attributes == FILEIO_ATTRIBUTE_LONG_NAME) && (i < 256) && ((lfnEntry->sequenceNumber & 0x40) != 0x40) && (lfnEntry->checksum == checksum))
-    {
-        entryOffset--;
-
-        // Copy file data to lfnData array
-
-        memcpy (lfnBuffer + i, &lfnEntry->namePart1, 10);
-        i+= 5;
-        memcpy (lfnBuffer + i, &lfnEntry->namePart2, 12);
-        i += 6;
-        memcpy (lfnBuffer + i, &lfnEntry->namePart3, 4);
-        i += 2;
-
-        lfnEntry = (FILEIO_DIRECTORY_ENTRY_LFN *)FILEIO_DirectoryEntryCache (directory, &error, &currentCluster, &currentClusterOffset, entryOffset);
-    }
-
-    if ((error == FILEIO_ERROR_NONE) && (lfnEntry->attributes == FILEIO_ATTRIBUTE_LONG_NAME) && (i < 256) && (lfnEntry->checksum == checksum))
-    {
-        memcpy (lfnBuffer + i, &lfnEntry->namePart1, 10);
-        i+= 5;
-        memcpy (lfnBuffer + i, &lfnEntry->namePart2, 12);
-        i += 6;
-        memcpy (lfnBuffer + i, &lfnEntry->namePart3, 4);
-        i += 2;
-    }
-    else
-    {
-        if (error == FILEIO_ERROR_NONE)
-        {
-            error = FILEIO_ERROR_BAD_CACHE_READ;
-        }
-    }
-
-    if (error == FILEIO_ERROR_NONE)
-    {
-        *(lfnBuffer + i) = 0x0000;
-        return FILEIO_LFN_SUCCESS;
-    }
-    else
-    {
-        return FILEIO_LFN_FAILURE;
-    }
-}
-
-bool FILEIO_LongFileNameCompare (uint16_t * fileName, FILEIO_SEARCH_TYPE mode)
-{
-    uint16_t nameLen;
-
-    nameLen = FILEIO_lfnlen (fileName);
-
-    if (nameLen != FILEIO_strlen16 (lfnBuffer))
-    {
-        return false;
-    }
-
-    if ((mode & FILEIO_SEARCH_PARTIAL_STRING_SEARCH) == FILEIO_SEARCH_PARTIAL_STRING_SEARCH)
-    {
-        uint16_t character;
-        uint16_t i = 0;
-
-        while(nameLen-- != 0)
-        {
-            character = fileName[i];
-            if (character == '*')
-                break;
-            if (character != '?')
-            {
-                if (character != lfnBuffer[i])
-                {
-                    return false;
-                }
-            }
-            i++;
-        }
-
-        return true;
-    }
-    else
-    {
-        if (FILEIO_memcmp16(fileName, lfnBuffer, nameLen) == 0)
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-uint16_t FILEIO_strlen16 (uint16_t * name)
-{
-    uint16_t i = 0;
-
-    while (*name++ != 0)
-    {
-        i++;
-    }
-
-    return i;
-}
-
-uint16_t FILEIO_lfnlen (uint16_t * name)
-{
-    uint16_t i = 0;
-    uint16_t c;
-
-    while (((c = *name++) != 0) && (c != FILEIO_CONFIG_DELIMITER))
-    {
-        i++;
-    }
-
-    return i;
-}
-
-int FILEIO_memcmp16 (uint16_t * name1, uint16_t * name2, uint16_t len)
-{
-    while (len--)
-    {
-        if (*name1 != *name2)
-        {
-            return (*name1 - *name2);
-        }
-        name1++;
-        name2++;
-    }
-
-    return 0;
-}
 
 uint16_t ReadRam16bit (uint8_t * pBuffer, uint16_t index)
 {

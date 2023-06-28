@@ -21,8 +21,8 @@ please contact mla_licensing@microchip.com
 
 #include <xc.h>
 #include "system_config.h"
-#include "fileio_lfn.h"
-#include "fileio_private_lfn.h"
+#include "fileio.h"
+#include "fileio_private.h"
 #include "system.h"
 #include "sd_spi.h"
 #include "sd_spi_private.h"

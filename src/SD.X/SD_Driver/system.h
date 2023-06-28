@@ -35,8 +35,8 @@
 
 #include "drv_spi.h"
 
-// Definition for system clock
-#define SYS_CLK_FrequencySystemGet()        32000000
+// Definition for system clock TODO check if right
+#define SYS_CLK_FrequencySystemGet()        16000000
 // Definition for peripheral clock
 #define SYS_CLK_FrequencyPeripheralGet()    SYS_CLK_FrequencySystemGet()
 // Definition for instruction clock

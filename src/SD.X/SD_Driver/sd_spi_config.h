@@ -71,6 +71,6 @@
 // Uncomment FILEIO_SD_CONFIG_MEDIA_SOFT_DETECT to enable soft detect of an SD card.
 // Some connectors do not have a card detect pin and must use software to detect
 // the presence of a card.
-//#define FILEIO_SD_CONFIG_MEDIA_SOFT_DETECT
+#define FILEIO_SD_CONFIG_MEDIA_SOFT_DETECT
 
 

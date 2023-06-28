@@ -2,6 +2,11 @@
 
 #include <xc.h> // include processor description
 #include "TIMER_Driver/TIMER_Driver.h"
+#include "SD_Driver/sd_spi.h"
+#include "SD_Driver/system_config.h"
+#include "SD_Driver/system.h"
+#include <xc.h>
+#include <stdbool.h>
 
 
 // Set cofiguration registers:-------------------------------------------------------------
@@ -47,6 +52,15 @@
 #pragma config GCP = OFF                // General Segment Code Protect (Code protection is disabled)
 #pragma config JTAGEN = OFF             // JTAG Port Enable (Disabled)
 
+
+//#pragma config ICS = PGx2
+// #pragma config PLL_96MHZ = ON
+// #pragma config OSCIOFNC = ON
+// #pragma config POSCMOD = HS
+// #pragma config FNOSC = PRIPLL
+// #pragma config PLLDIV = DIV2
+// #pragma config IOL1WAY = ON
+
 //==========================================================================================
 
 // Prototypes
@@ -55,6 +69,11 @@ void initGPIO(void);
 void initCLOCK(void);
 
 void initTIMERS(void);
+
+void USER_SdSpiSetCs(uint8_t a);
+bool USER_SdSpiGetCd(void);
+bool USER_SdSpiGetWp(void);
+void USER_SdSpiConfigurePins (void);
 
 // Declarations
 
@@ -152,4 +171,75 @@ void initialize_HW(void){
     initGPIO();
 
     initTIMERS();
+
+    // AD1PCFGL = 0xFFFF;
 }	
+
+void USER_SdSpiConfigurePins (void)
+{
+    //Initialize the SPI
+    // RPINR20bits.SDI1R = 23;
+    // RPOR7bits.RP15R = 7;
+    // RPOR0bits.RP0R = 8;  
+    // CS --> RE7
+    // MOSI --> RP21
+    // CLK --> RP26
+    // MISO --> RP19  
+    ANSGbits.ANSG7 = 0; // digital
+    ANSGbits.ANSG6 = 0; // digital
+    ANSGbits.ANSG8 = 0; // digital
+    RPOR13bits.RP26R = 8; // RP26 should be spi 1 clock
+    RPOR10bits.RP21R = 7; // RP21 should be spi 1 mosi
+
+    ANSGbits.ANSG8 = 0;
+    RPINR20bits.SDI1R = 19; // RP19 should be spi 1 miso
+
+    //enable a pull-up for the card detect, just in case the SD-Card isn't attached
+    //  then lets have a pull-up to make sure we don't think it is there.
+    CNPU5bits.CN68PUE = 1;
+
+    // Deassert the chip select pin
+    LATEbits.LATE7 = 1;
+    // Configure CS pin as an output
+    ANSEbits.ANSE7 = 1;
+    TRISEbits.TRISE7 = 0;
+    // Configure CD pin as an input
+    TRISFbits.TRISF0 = 1;
+    // Configure WP pin as an input
+    // TRISFbits.TRISF1 = 1;
+}
+
+void USER_SdSpiSetCs(uint8_t a)
+{
+    LATEbits.LATE7 = a;
+}
+
+bool USER_SdSpiGetCd(void)
+{
+    // return (!PORTFbits.RF0) ? true : false;
+    return true;
+}
+
+bool USER_SdSpiGetWp(void)
+{
+    // return (PORTFbits.RF1) ? true : false;
+    return false;
+}
+
+
+// The sdCardMediaParameters structure defines user-implemented functions needed by the SD-SPI fileio driver.
+// The driver will call these when necessary.  For the SD-SPI driver, the user must provide
+// parameters/functions to define which SPI module to use, Set/Clear the chip select pin,
+// get the status of the card detect and write protect pins, and configure the CS, CD, and WP
+// pins as inputs/outputs (as appropriate).
+// For this demo, these functions are implemented in system.c, since the functionality will change
+// depending on which demo board/microcontroller you're using.
+// This structure must be maintained as long as the user wishes to access the specified drive.
+FILEIO_SD_DRIVE_CONFIG sdCardMediaParameters =
+{
+    1,                                  // Use SPI module 2
+    USER_SdSpiSetCs,                    // User-specified function to set/clear the Chip Select pin.
+    USER_SdSpiGetCd,                    // User-specified function to get the status of the Card Detect pin.
+    USER_SdSpiGetWp,                    // User-specified function to get the status of the Write Protect pin.
+    USER_SdSpiConfigurePins             // User-specified function to configure the pins' TRIS bits.
+};

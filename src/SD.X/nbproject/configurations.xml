@@ -17,16 +17,15 @@
       <itemPath>SD_Driver/drv_spi.h</itemPath>
       <itemPath>SD_Driver/drv_spi_config.h</itemPath>
       <itemPath>SD_Driver/fileio_config.h</itemPath>
-      <itemPath>SD_Driver/fileio_lfn.h</itemPath>
       <itemPath>SD_Driver/fileio_media.h</itemPath>
       <itemPath>SD_Driver/fileio_private.h</itemPath>
-      <itemPath>SD_Driver/fileio_private_lfn.h</itemPath>
       <itemPath>SD_Driver/rtcc.h</itemPath>
       <itemPath>SD_Driver/sd_spi.h</itemPath>
       <itemPath>SD_Driver/sd_spi_config.h</itemPath>
       <itemPath>SD_Driver/sd_spi_private.h</itemPath>
       <itemPath>SD_Driver/system.h</itemPath>
       <itemPath>SD_Driver/system_config.h</itemPath>
+      <itemPath>SD_Driver/fileio.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -45,9 +44,10 @@
       <itemPath>TOUCH_Driver/TOUCH_Driver.c</itemPath>
       <itemPath>OSZI_Driver/OSZI_Driver.c</itemPath>
       <itemPath>SD_Driver/drv_spi_16bit.c</itemPath>
-      <itemPath>SD_Driver/fileio_lfn.c</itemPath>
       <itemPath>SD_Driver/sd_spi.c</itemPath>
       <itemPath>SD_Driver/system.c</itemPath>
+      <itemPath>SD_Driver/rtcc.c</itemPath>
+      <itemPath>SD_Driver/fileio.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

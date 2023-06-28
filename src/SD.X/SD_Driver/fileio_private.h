@@ -24,7 +24,7 @@ please contact mla_licensing@microchip.com
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "fileio_lfn.h"
+#include "fileio.h"
 
 // Private search parameters
 typedef enum

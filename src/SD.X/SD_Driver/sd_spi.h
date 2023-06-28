@@ -36,7 +36,7 @@ please contact mla_licensing@microchip.com
 //function, or the FILEIO_SD_AsyncWriteTasks() function.
 typedef struct
 {
-    uint16_t wNumBytes;         //Number of bytes to attempt to read or write in the next call to MDD_SDSPI_AsyncReadTasks() or MDD_SDSPI_AsyncWriteTasks.  May be updated between calls to the handler.
+    unsigned int wNumBytes;         //Number of bytes to attempt to read or write in the next call to MDD_SDSPI_AsyncReadTasks() or MDD_SDSPI_AsyncWriteTasks.  May be updated between calls to the handler.
     uint32_t dwBytesRemaining; //Should be initialized to the total number of uint8_ts that you wish to read or write.  This value is allowed to be greater than a single block size of the media.
     uint8_t* pBuffer;          //Pointer to where the read/written uint8_ts should be copied to/from.  May be updated between calls to the handler function.
     uint32_t dwAddress;        //Starting block address to read or to write to on the media.  Should only get initialized, do not modify after that.
@@ -366,7 +366,7 @@ uint32_t FILEIO_SD_CapacityRead(FILEIO_SD_DRIVE_CONFIG * config);
   Remarks:
     None
   *********************************************************/
-uint16_t FILEIO_SD_SectorSizeRead(FILEIO_SD_DRIVE_CONFIG * config);
+unsigned int FILEIO_SD_SectorSizeRead(FILEIO_SD_DRIVE_CONFIG * config);
 
 /*********************************************************
   Function:

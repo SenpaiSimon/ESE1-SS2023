@@ -51,17 +51,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=init.c main.c LCD_Driver/LCD_Driver.c DAC_Driver/DAC_Driver.c TIMER_Driver/TIMER_Driver.c UART_Driver/UART_Driver.c ADC_Driver/ADC_Driver.c TOUCH_Driver/TOUCH_Driver.c OSZI_Driver/OSZI_Driver.c SD_Driver/drv_spi_16bit.c SD_Driver/fileio_lfn.c SD_Driver/sd_spi.c SD_Driver/system.c
+SOURCEFILES_QUOTED_IF_SPACED=init.c main.c LCD_Driver/LCD_Driver.c DAC_Driver/DAC_Driver.c TIMER_Driver/TIMER_Driver.c UART_Driver/UART_Driver.c ADC_Driver/ADC_Driver.c TOUCH_Driver/TOUCH_Driver.c OSZI_Driver/OSZI_Driver.c SD_Driver/drv_spi_16bit.c SD_Driver/sd_spi.c SD_Driver/system.c SD_Driver/rtcc.c SD_Driver/fileio.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/init.o ${OBJECTDIR}/main.o ${OBJECTDIR}/LCD_Driver/LCD_Driver.o ${OBJECTDIR}/DAC_Driver/DAC_Driver.o ${OBJECTDIR}/TIMER_Driver/TIMER_Driver.o ${OBJECTDIR}/UART_Driver/UART_Driver.o ${OBJECTDIR}/ADC_Driver/ADC_Driver.o ${OBJECTDIR}/TOUCH_Driver/TOUCH_Driver.o ${OBJECTDIR}/OSZI_Driver/OSZI_Driver.o ${OBJECTDIR}/SD_Driver/drv_spi_16bit.o ${OBJECTDIR}/SD_Driver/fileio_lfn.o ${OBJECTDIR}/SD_Driver/sd_spi.o ${OBJECTDIR}/SD_Driver/system.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/init.o.d ${OBJECTDIR}/main.o.d ${OBJECTDIR}/LCD_Driver/LCD_Driver.o.d ${OBJECTDIR}/DAC_Driver/DAC_Driver.o.d ${OBJECTDIR}/TIMER_Driver/TIMER_Driver.o.d ${OBJECTDIR}/UART_Driver/UART_Driver.o.d ${OBJECTDIR}/ADC_Driver/ADC_Driver.o.d ${OBJECTDIR}/TOUCH_Driver/TOUCH_Driver.o.d ${OBJECTDIR}/OSZI_Driver/OSZI_Driver.o.d ${OBJECTDIR}/SD_Driver/drv_spi_16bit.o.d ${OBJECTDIR}/SD_Driver/fileio_lfn.o.d ${OBJECTDIR}/SD_Driver/sd_spi.o.d ${OBJECTDIR}/SD_Driver/system.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/init.o ${OBJECTDIR}/main.o ${OBJECTDIR}/LCD_Driver/LCD_Driver.o ${OBJECTDIR}/DAC_Driver/DAC_Driver.o ${OBJECTDIR}/TIMER_Driver/TIMER_Driver.o ${OBJECTDIR}/UART_Driver/UART_Driver.o ${OBJECTDIR}/ADC_Driver/ADC_Driver.o ${OBJECTDIR}/TOUCH_Driver/TOUCH_Driver.o ${OBJECTDIR}/OSZI_Driver/OSZI_Driver.o ${OBJECTDIR}/SD_Driver/drv_spi_16bit.o ${OBJECTDIR}/SD_Driver/sd_spi.o ${OBJECTDIR}/SD_Driver/system.o ${OBJECTDIR}/SD_Driver/rtcc.o ${OBJECTDIR}/SD_Driver/fileio.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/init.o.d ${OBJECTDIR}/main.o.d ${OBJECTDIR}/LCD_Driver/LCD_Driver.o.d ${OBJECTDIR}/DAC_Driver/DAC_Driver.o.d ${OBJECTDIR}/TIMER_Driver/TIMER_Driver.o.d ${OBJECTDIR}/UART_Driver/UART_Driver.o.d ${OBJECTDIR}/ADC_Driver/ADC_Driver.o.d ${OBJECTDIR}/TOUCH_Driver/TOUCH_Driver.o.d ${OBJECTDIR}/OSZI_Driver/OSZI_Driver.o.d ${OBJECTDIR}/SD_Driver/drv_spi_16bit.o.d ${OBJECTDIR}/SD_Driver/sd_spi.o.d ${OBJECTDIR}/SD_Driver/system.o.d ${OBJECTDIR}/SD_Driver/rtcc.o.d ${OBJECTDIR}/SD_Driver/fileio.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/init.o ${OBJECTDIR}/main.o ${OBJECTDIR}/LCD_Driver/LCD_Driver.o ${OBJECTDIR}/DAC_Driver/DAC_Driver.o ${OBJECTDIR}/TIMER_Driver/TIMER_Driver.o ${OBJECTDIR}/UART_Driver/UART_Driver.o ${OBJECTDIR}/ADC_Driver/ADC_Driver.o ${OBJECTDIR}/TOUCH_Driver/TOUCH_Driver.o ${OBJECTDIR}/OSZI_Driver/OSZI_Driver.o ${OBJECTDIR}/SD_Driver/drv_spi_16bit.o ${OBJECTDIR}/SD_Driver/fileio_lfn.o ${OBJECTDIR}/SD_Driver/sd_spi.o ${OBJECTDIR}/SD_Driver/system.o
+OBJECTFILES=${OBJECTDIR}/init.o ${OBJECTDIR}/main.o ${OBJECTDIR}/LCD_Driver/LCD_Driver.o ${OBJECTDIR}/DAC_Driver/DAC_Driver.o ${OBJECTDIR}/TIMER_Driver/TIMER_Driver.o ${OBJECTDIR}/UART_Driver/UART_Driver.o ${OBJECTDIR}/ADC_Driver/ADC_Driver.o ${OBJECTDIR}/TOUCH_Driver/TOUCH_Driver.o ${OBJECTDIR}/OSZI_Driver/OSZI_Driver.o ${OBJECTDIR}/SD_Driver/drv_spi_16bit.o ${OBJECTDIR}/SD_Driver/sd_spi.o ${OBJECTDIR}/SD_Driver/system.o ${OBJECTDIR}/SD_Driver/rtcc.o ${OBJECTDIR}/SD_Driver/fileio.o
 
 # Source Files
-SOURCEFILES=init.c main.c LCD_Driver/LCD_Driver.c DAC_Driver/DAC_Driver.c TIMER_Driver/TIMER_Driver.c UART_Driver/UART_Driver.c ADC_Driver/ADC_Driver.c TOUCH_Driver/TOUCH_Driver.c OSZI_Driver/OSZI_Driver.c SD_Driver/drv_spi_16bit.c SD_Driver/fileio_lfn.c SD_Driver/sd_spi.c SD_Driver/system.c
+SOURCEFILES=init.c main.c LCD_Driver/LCD_Driver.c DAC_Driver/DAC_Driver.c TIMER_Driver/TIMER_Driver.c UART_Driver/UART_Driver.c ADC_Driver/ADC_Driver.c TOUCH_Driver/TOUCH_Driver.c OSZI_Driver/OSZI_Driver.c SD_Driver/drv_spi_16bit.c SD_Driver/sd_spi.c SD_Driver/system.c SD_Driver/rtcc.c SD_Driver/fileio.c
 
 
 
@@ -149,12 +149,6 @@ ${OBJECTDIR}/SD_Driver/drv_spi_16bit.o: SD_Driver/drv_spi_16bit.c  .generated_fi
 	@${RM} ${OBJECTDIR}/SD_Driver/drv_spi_16bit.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  SD_Driver/drv_spi_16bit.c  -o ${OBJECTDIR}/SD_Driver/drv_spi_16bit.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/SD_Driver/drv_spi_16bit.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
-${OBJECTDIR}/SD_Driver/fileio_lfn.o: SD_Driver/fileio_lfn.c  .generated_files/flags/default/f57cd094063f021e2b7ffea102e3d7643f7d2a42 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
-	@${MKDIR} "${OBJECTDIR}/SD_Driver" 
-	@${RM} ${OBJECTDIR}/SD_Driver/fileio_lfn.o.d 
-	@${RM} ${OBJECTDIR}/SD_Driver/fileio_lfn.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  SD_Driver/fileio_lfn.c  -o ${OBJECTDIR}/SD_Driver/fileio_lfn.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/SD_Driver/fileio_lfn.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
-	
 ${OBJECTDIR}/SD_Driver/sd_spi.o: SD_Driver/sd_spi.c  .generated_files/flags/default/2d1928ada2722ec3984f7fcef41261103815e31f .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/SD_Driver" 
 	@${RM} ${OBJECTDIR}/SD_Driver/sd_spi.o.d 
@@ -166,6 +160,18 @@ ${OBJECTDIR}/SD_Driver/system.o: SD_Driver/system.c  .generated_files/flags/defa
 	@${RM} ${OBJECTDIR}/SD_Driver/system.o.d 
 	@${RM} ${OBJECTDIR}/SD_Driver/system.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  SD_Driver/system.c  -o ${OBJECTDIR}/SD_Driver/system.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/SD_Driver/system.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
+	
+${OBJECTDIR}/SD_Driver/rtcc.o: SD_Driver/rtcc.c  .generated_files/flags/default/ef99d1efe967366623fab9876f845233ad31eb77 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+	@${MKDIR} "${OBJECTDIR}/SD_Driver" 
+	@${RM} ${OBJECTDIR}/SD_Driver/rtcc.o.d 
+	@${RM} ${OBJECTDIR}/SD_Driver/rtcc.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  SD_Driver/rtcc.c  -o ${OBJECTDIR}/SD_Driver/rtcc.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/SD_Driver/rtcc.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
+	
+${OBJECTDIR}/SD_Driver/fileio.o: SD_Driver/fileio.c  .generated_files/flags/default/4c8b3265840018a3641790df562b856dad261992 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+	@${MKDIR} "${OBJECTDIR}/SD_Driver" 
+	@${RM} ${OBJECTDIR}/SD_Driver/fileio.o.d 
+	@${RM} ${OBJECTDIR}/SD_Driver/fileio.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  SD_Driver/fileio.c  -o ${OBJECTDIR}/SD_Driver/fileio.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/SD_Driver/fileio.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
 else
 ${OBJECTDIR}/init.o: init.c  .generated_files/flags/default/2cfde71d613f311d8f13eca5bb6ef72175044536 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
@@ -228,12 +234,6 @@ ${OBJECTDIR}/SD_Driver/drv_spi_16bit.o: SD_Driver/drv_spi_16bit.c  .generated_fi
 	@${RM} ${OBJECTDIR}/SD_Driver/drv_spi_16bit.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  SD_Driver/drv_spi_16bit.c  -o ${OBJECTDIR}/SD_Driver/drv_spi_16bit.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/SD_Driver/drv_spi_16bit.o.d"      -mno-eds-warn  -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
-${OBJECTDIR}/SD_Driver/fileio_lfn.o: SD_Driver/fileio_lfn.c  .generated_files/flags/default/6120d86f0b76c033774fa38ec6cc0d3963927c02 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
-	@${MKDIR} "${OBJECTDIR}/SD_Driver" 
-	@${RM} ${OBJECTDIR}/SD_Driver/fileio_lfn.o.d 
-	@${RM} ${OBJECTDIR}/SD_Driver/fileio_lfn.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  SD_Driver/fileio_lfn.c  -o ${OBJECTDIR}/SD_Driver/fileio_lfn.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/SD_Driver/fileio_lfn.o.d"      -mno-eds-warn  -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
-	
 ${OBJECTDIR}/SD_Driver/sd_spi.o: SD_Driver/sd_spi.c  .generated_files/flags/default/3ed30f19e0f2fdfec4159e55c90283f47b5e6dae .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/SD_Driver" 
 	@${RM} ${OBJECTDIR}/SD_Driver/sd_spi.o.d 
@@ -245,6 +245,18 @@ ${OBJECTDIR}/SD_Driver/system.o: SD_Driver/system.c  .generated_files/flags/defa
 	@${RM} ${OBJECTDIR}/SD_Driver/system.o.d 
 	@${RM} ${OBJECTDIR}/SD_Driver/system.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  SD_Driver/system.c  -o ${OBJECTDIR}/SD_Driver/system.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/SD_Driver/system.o.d"      -mno-eds-warn  -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
+	
+${OBJECTDIR}/SD_Driver/rtcc.o: SD_Driver/rtcc.c  .generated_files/flags/default/560c87b52c9209a78b3673bb35bd79d77b237a5d .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+	@${MKDIR} "${OBJECTDIR}/SD_Driver" 
+	@${RM} ${OBJECTDIR}/SD_Driver/rtcc.o.d 
+	@${RM} ${OBJECTDIR}/SD_Driver/rtcc.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  SD_Driver/rtcc.c  -o ${OBJECTDIR}/SD_Driver/rtcc.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/SD_Driver/rtcc.o.d"      -mno-eds-warn  -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
+	
+${OBJECTDIR}/SD_Driver/fileio.o: SD_Driver/fileio.c  .generated_files/flags/default/743a519fc57b716e6c57fd46d2e0153a38609f69 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+	@${MKDIR} "${OBJECTDIR}/SD_Driver" 
+	@${RM} ${OBJECTDIR}/SD_Driver/fileio.o.d 
+	@${RM} ${OBJECTDIR}/SD_Driver/fileio.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  SD_Driver/fileio.c  -o ${OBJECTDIR}/SD_Driver/fileio.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/SD_Driver/fileio.o.d"      -mno-eds-warn  -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
 endif
 

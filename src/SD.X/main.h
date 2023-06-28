@@ -7,9 +7,15 @@
 #include "TOUCH_Driver/TOUCH_Driver.h"
 #include "OSZI_Driver/OSZI_Driver.h"
 #include <string.h>
+#include "SD_Driver/fileio.h"
+#include <string.h>
+#include "SD_Driver/rtcc.h"
+#include "SD_Driver/system.h"
+#include "SD_Driver/sd_spi.h"
 
 #define _PSV __attribute__((auto_psv))
 
+void GetTimestamp (FILEIO_TIMESTAMP * timeStamp);
 // ISR
 void _PSV _ISR _T1Interrupt(void);
 
