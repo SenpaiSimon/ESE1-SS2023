@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "msp430.h": "c"
+        "msp430.h": "c",
+        "gpio_control.h": "c"
     }
 }
