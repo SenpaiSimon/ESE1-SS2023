@@ -17,7 +17,7 @@
 void initMSP();
 
 /*!
- * Main Entry-Point of the program
+ * @brief Main Entry-Point of the program
  */
 int main();
 
