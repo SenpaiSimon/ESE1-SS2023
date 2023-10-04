@@ -10,6 +10,9 @@
 
 #include <msp430.h>
 
+/*!
+ * @brief Place to init all GPIO related things and Functions
+ */
 void initGPIO();
 
 #endif /* GPIO_CONTROL_GPIO_CONTROL_H_ */
