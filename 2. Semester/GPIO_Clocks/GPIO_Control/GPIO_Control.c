@@ -17,7 +17,9 @@ void initGPIO() {
 
 
     // ---------------- Map Clocks to a GPIO -------------------------------------------
-    // output clocks to pins -- PJ1 - PJ2 - PJ3
+    // output clocks to pins -- PJ1 - PJ2 - PJ3 
+    // --> see device specific datasheet s.111
+    //
     PJDIR |= BIT1 + BIT2 + BIT3; // set to output
     // set the function to the clock
     // PJ0
