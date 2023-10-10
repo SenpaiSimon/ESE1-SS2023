@@ -16,6 +16,6 @@ int main(void) {
     while(1)    
     {
         PJOUT ^= BIT6 + BIT7;                // Toggle Pins
-        __delay_cycles(100000);
+        __delay_cycles(101000);
     }
 }
