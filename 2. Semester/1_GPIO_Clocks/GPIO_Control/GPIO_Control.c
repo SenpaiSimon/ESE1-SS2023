@@ -20,16 +20,19 @@ void initGPIO() {
     // output clocks to pins -- PJ1 - PJ2 - PJ3 
     // --> see device specific datasheet s.111
     //
-    PJDIR |= BIT1 + BIT2 + BIT3; // set to output
+    PJDIR |= BIT0 + BIT1 + BIT2; // set to output
     // set the function to the clock
     // PJ0
     PJSEL1 &= ~BIT0; // reset bit0
     PJSEL0 |= BIT0; // and set bit0
+    CECTL3 &= ~BIT0;
     // PJ1
     PJSEL1 &= ~BIT1; // reset bit1
     PJSEL0 |= BIT1; // and set bit1
+    CECTL3 &= ~BIT1;
     // PJ2
     PJSEL1 &= ~BIT2; // reset bit2
-    PJSEL0 |= BIT2; // and set bit2
+    PJSEL0 |= BIT2; // and set bit
+    CECTL3 &= ~BIT2;
 }
 

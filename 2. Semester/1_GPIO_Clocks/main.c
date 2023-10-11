@@ -6,6 +6,7 @@ void initMSP() {
     WDTCTL = WDTPW | WDTHOLD;       // Stop WDT
 
     // all the other inits
+    initClocks();
     initGPIO();
 }
 
@@ -15,7 +16,8 @@ int main(void) {
 
     while(1)    
     {
-        PJOUT ^= BIT6 + BIT7;                // Toggle Pins
-        __delay_cycles(101000);
+        // PJOUT ^= BIT6 + BIT7;                // Toggle Pins
+        PJOUT ^= BIT6;
+        // __delay_cycles(100000);
     }
 }
