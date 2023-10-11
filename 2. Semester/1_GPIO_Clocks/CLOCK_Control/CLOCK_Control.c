@@ -9,27 +9,28 @@
 
 void initClocks() {
     // unlock clocks --> erata s.104
-    CSCTL0_H = 0xA5;
+    CSCTL0_H = CSKEY_H;
 
     // setup DCO freq
-    CSCTL1 &= ~(BIT1 + BIT2 + BIT3); // reset
-    CSCTL1 |= (BIT1 + BIT2); // set DCO freq to 4mhz --> erata s.104
-    CSCTL1 |= BIT6; // reset bit6 --> get 4mhz from dco
+    CSCTL1 &= ~(DCOFSEL_7); // reset
+    CSCTL1 |= (DCOFSEL_6); // set DCO freq to 8mhz --> erata s.104
+    CSCTL1 |= DCORSEL; // set bit6 --> get 8mhz from dco
 
     // ACLK
-    CSCTL2 &= ~(BITA + BIT9 + BIT8); // clear all for ACLK
-    CSCTL2 |= BIT8; // ACLK source is VLO --> erata s.105
-    CSCTL3 &= ~(BITA + BIT9 + BIT8); // divider to 1 --> erata s.106
+    CSCTL2 &= ~(SELA_7); // clear all for ACLK
+    CSCTL2 |= SELA_2; // ACLK source is VLO --> erata s.105
+    CSCTL3 &= ~(DIVA__32); // reset all bits
+    CSCTL3 |= (DIVA_0); // divider to 1 --> erata s.106
 
     // SMCLK
-    CSCTL2 &= ~(BIT4 + BIT5 + BIT6); // clear all for SMCLK
-    CSCTL2 |= (BIT4 + BIT5); // set source to DCO --> erata s.105
-    CSCTL3 &= ~(BIT4 + BIT5 + BIT6); // divider to 1 --> erata s.106
-    CSCTL3 |= (BIT6); // divider to 16 --> 8Mhz/16 = 500khz
+    CSCTL2 &= ~(SELS_7); // clear all for SMCLK
+    CSCTL2 |= (SELS_4); // set source to DCO --> erata s.105
+    CSCTL3 &= ~(DIVS__32); // divider to 1 --> erata s.106
+    CSCTL3 |= (DIVS_5); // divider to 16 --> 8Mhz/16 = 500khz
 
     // MCLK
-    CSCTL2 &= ~(BIT0 + BIT1 + BIT2); // clear all for MCLK
-    CSCTL2 |= (BIT0 + BIT1); // set source to DCO --> erata s.105
-    CSCTL3 &= ~(BIT0 + BIT1 + BIT2); // divider to 1 --> erata s.106
-    CSCTL3 |= (BIT0); // divider to 2 --> 8Mhz/2 = 4Mhz
+    CSCTL2 &= ~(SELM_7); // clear all for MCLK
+    CSCTL2 |= (SELM_4); // set source to DCO --> erata s.105
+    CSCTL3 &= ~(DIVM__32); // divider to 1 --> erata s.106
+    CSCTL3 |= (DIVM_1); // divider to 2 --> 8Mhz/2 = 4Mhz
 }
