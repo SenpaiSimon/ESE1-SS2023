@@ -13,7 +13,8 @@
                 "UNICODE",
                 "_UNICODE",
                 "__MSP430FR5969__",
-                "_MPU_ENABLE"
+                "_MPU_ENABLE",
+                "__TI_COMPILER_VERSION__"
 
             ],
             "compilerPath": "${GCC_PATH}/gcc.exe",

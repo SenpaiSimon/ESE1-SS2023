@@ -36,3 +36,21 @@ void initGPIO() {
     CECTL3 &= ~BIT2;
 }
 
+void disableAllGPIO() {
+    P1OUT = 0;
+    P1DIR = 0xFF;
+
+    P2OUT = 0;
+    P2DIR = 0xFF;
+
+    P3OUT = 0;
+    P3DIR = 0xFF;
+
+    PJOUT = 0;
+    PJDIR = 0xFFFF;
+
+    // exception for nmos to avoid leaking current
+    P1OUT |= BIT2;
+    P1DIR |= BIT2;
+}
+

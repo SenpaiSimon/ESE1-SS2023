@@ -16,11 +16,14 @@ void initClocks() {
     CSCTL1 |= (DCOFSEL_6); // set DCO freq to 8mhz --> erata s.104
     CSCTL1 |= DCORSEL; // set bit6 --> get 8mhz from dco
 
-    // ACLK
+    // ACLK -- should be crystal
+    // enable osc pins to work
+    PJSEL0 |= BIT4 | BIT5;
+    // setup clocks
     CSCTL2 &= ~(SELA_7); // clear all for ACLK
-    CSCTL2 |= SELA_2; // ACLK source is VLO --> erata s.105
+    CSCTL2 |= SELA__LFXTCLK; // ACLK source is LFXT
     CSCTL3 &= ~(DIVA__32); // reset all bits
-    CSCTL3 |= (DIVA_0); // divider to 1 --> erata s.106
+    CSCTL3 |= (DIVA__1); // divider to 1 --> erata s.106
 
     // SMCLK
     CSCTL2 &= ~(SELS_7); // clear all for SMCLK

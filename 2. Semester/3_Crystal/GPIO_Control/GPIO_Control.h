@@ -15,4 +15,9 @@
  */
 void initGPIO();
 
+/*!
+ * @brief Disable all GPIOs for LPM
+ */
+void disableAllGPIO();
+
 #endif /* GPIO_CONTROL_GPIO_CONTROL_H_ */
