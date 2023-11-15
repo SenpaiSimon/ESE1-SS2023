@@ -44,23 +44,6 @@ void initClocks() {
 void initRTC() {
     RTCCTL01 = RTCTEVIE | RTCBCD | RTCHOLD | RTCTEV__MIN;
     // enable rtc, bcd mode, hold, read ready ir, time event ir, minute event ir
-
-    // set current clock 08.11.2023 - 10:00:40 --> so we can wake up on Minute changed after 20s
-    RTCYEAR = 0x2023;
-    RTCMON = 0x11;
-    RTCDAY = 0x08;
-    RTCDOW = 0x03;
-    RTCHOUR = 0x10;
-    RTCMIN = 0x00;
-    RTCSEC = 0x59;
-
-    // start RTC
-    RTCCTL01 &= ~(RTCHOLD);
-}
-
-void initRTCAfterLPM() {
-    RTCCTL01 = RTCTEVIE | RTCBCD | RTCHOLD | RTCTEV__MIN;
-    // enable rtc, bcd mode, hold, read ready ir, time event ir, minute event ir
     RTCPS1CTL |= RT1PSIE;
     // enable prescaler ir in stage 1
 
@@ -68,6 +51,8 @@ void initRTCAfterLPM() {
     RTCPS1CTL |= (BITE + BITF); 
     RTCPS1CTL |= RT1IP__32; // isr prescaler also set to 2^5 --> should be 4Hz
 
+    RTCSEC = 0x59;
+    
     // start RTC
     RTCCTL01 &= ~(RTCHOLD);
 }
