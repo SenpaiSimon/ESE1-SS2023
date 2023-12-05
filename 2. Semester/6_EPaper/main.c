@@ -1,5 +1,6 @@
 #include "main.h"
 
+DISP_STATE_t display;
 
 void initMSP() {
     // first stop the watchdog
@@ -10,7 +11,7 @@ void initMSP() {
     //initRTC();
     initClocks();
     initGPIO();
-    initEpaper();
+    initEpaper(&display);
 
     // ---------------------------------- Crystal Stuff
     // wait for osc to work properly
@@ -37,11 +38,10 @@ void initMSP() {
 int main(void) {
     initMSP();
 
+    setMisc(true, true, true);
+    setNumber(888);
 
-
-    while(1) {
-        epaperClear();
-    
+    while(1) {    
         epaperShow();
     }
 }
