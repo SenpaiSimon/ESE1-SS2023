@@ -40,5 +40,4 @@ void epaperClear() {
     _delay_cycles(DEFAULT_DELAY);
 
     TopE_low;
-   
 }

@@ -9,6 +9,7 @@
 #define EPAPER_CONTROL_EPAPER_CONTROL_H_
 
 #include <msp430.h>
+#include "segments.h"
 
 #define CYCYLES_PER_MS 1000
 #define DEFAULT_DELAY 250000
