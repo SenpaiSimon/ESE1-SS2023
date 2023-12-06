@@ -26,6 +26,8 @@ void initEpaper(DISP_STATE_t *state) {
     P3DIR |= BIT0 | BIT1 | BIT2 | BIT3 | BIT4;
     PJDIR |= BIT1 | BIT2 | BIT3 | BIT4 | BIT5 | BIT6 | BIT7;
     P4DIR |= BIT0 | BIT1 | BIT4 | BIT5 | BIT6 | BIT7;
+
+    epaperShow();
 }
 
 void epaperShow() {
@@ -85,7 +87,7 @@ void epaperShow() {
 
 void setNumber(uint32_t number) {
     uint32_t localNumber = number;
-    uint8_t temp;
+    uint8_t temp = 0;
 
     temp = localNumber / 100;
     localState->hundred.value = numberLookup[temp];

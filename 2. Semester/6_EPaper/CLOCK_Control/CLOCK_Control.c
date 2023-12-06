@@ -52,7 +52,7 @@ void initRTC() {
     RTCDOW = 0x03;
     RTCHOUR = 0x10;
     RTCMIN = 0x00;
-    RTCSEC = 0x59;
+    RTCSEC = 0x40;
 
         
     RTCPS1CTL |= RT1PSIE;

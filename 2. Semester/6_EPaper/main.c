@@ -1,6 +1,7 @@
 #include "main.h"
 
 DISP_STATE_t display;
+int minutesPassed = 0;
 
 void initMSP() {
     // first stop the watchdog
@@ -8,7 +9,7 @@ void initMSP() {
 
     disableAllGPIO();
     // all the other inits
-    //initRTC();
+    initRTC();
     initClocks();
     initGPIO();
     initEpaper(&display);
@@ -37,12 +38,16 @@ void initMSP() {
 
 int main(void) {
     initMSP();
-
-    setMisc(true, true, true);
-    setNumber(888);
+    // int num = 0;
+    // setMisc(true, true, true);
+    // setNumber(num);
+    setNumber(minutesPassed);
+    __bis_SR_register(GIE | LPM3_bits);
 
     while(1) {    
-        epaperShow();
+        // epaperClear();
+        // num += 111;
+        // setNumber(num);
     }
 }
 
@@ -80,6 +85,9 @@ void __attriubte__ ((interrupt(RTC_VECTOR))) RTC_ISR (void)
         
         case RTCIV_RTCTEVIFG: // every minute
             // PJOUT ^= BIT7; 
+            minutesPassed++;
+            setNumber(minutesPassed);
+            
         break; 
            
         case RTCIV_RTCAIFG: break;
