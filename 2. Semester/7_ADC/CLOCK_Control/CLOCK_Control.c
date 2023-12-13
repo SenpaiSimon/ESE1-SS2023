@@ -40,6 +40,21 @@ void initClocks() {
     CSCTL3 |= (DIVM_4); // divider to 2 --> 8Mhz/8 = 1Mhz
 }
 
+void initCrystal() {
+    // ---------------------------------- Crystal Stuff
+    // wait for osc to work properly
+    CSCTL4 &= ~LFXTOFF;
+
+    do {
+        CSCTL5 &= ~LFXTOFFG;
+        SFRIFG1 &= ~OFIFG;
+    } while(SFRIFG1 & OFIFG);
+
+    // now that osc is running enable fault isr
+    SFRIE1 |= OFIE;
+    // ----------------------------------
+}
+
 
 void initRTC() {
     RTCCTL01 = RTCTEVIE | RTCBCD | RTCHOLD | RTCTEV__MIN;

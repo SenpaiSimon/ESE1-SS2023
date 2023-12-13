@@ -12,6 +12,8 @@
 
 void initClocks();
 
+void initCrystal();
+
 void initRTC();
 
 #endif /* CLOCK_CONTROL_CLOCK_CONTROL_H_ */

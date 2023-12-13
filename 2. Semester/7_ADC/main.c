@@ -1,9 +1,10 @@
 #include "main.h"
 
 DISP_STATE_t display;
+adc_values_t adcStorage;
 int minutesPassed = 0;
-uint16_t tempVal = 0;
-uint16_t extVal = 0;
+
+static const uint8_t adcSampleFreq = 10; //Hz
 
 void initMSP() {
     // first stop the watchdog
@@ -16,46 +17,27 @@ void initMSP() {
     initGPIO();
     initEpaper(&display);
     initADC();
-
-    // ---------------------------------- Crystal Stuff
-    // wait for osc to work properly
-    CSCTL4 &= ~LFXTOFF;
-
-    do {
-        CSCTL5 &= ~LFXTOFFG;
-        SFRIFG1 &= ~OFIFG;
-    } while(SFRIFG1 & OFIFG);
-
-    // now that osc is running enable fault isr
-    SFRIE1 |= OFIE;
-    // ----------------------------------
+    initCrystal();
 
 
     // ---------------------------------- setup timer 
     // ACLK source -- up mode (compare mode)
     TA0CCTL0 = CCIE; // compare interrupt enable
-    TA0CCR0 = 3276; // tenth of quartz freq --> 10Hz
+    TA0CCR0 = (unsigned int)(32768/adcSampleFreq);
     TA0CTL = TASSEL__ACLK | MC__UP;
     // ----------------------------------
+
+    // global ISR enable
+    __bis_SR_register(GIE);
 }
 
 int main(void) {
     initMSP();
-    // int num = 0;
-    // setMisc(true, true, true);
-    // setNumber(num);
-    // setNumber(minutesPassed);
-    __bis_SR_register(GIE);
+
     setMisc(false, true, false);
 
     while(1) {    
-        // epaperClear();
-        // _delay_cycles(5000);
-
-        
-
-        setNumber(tempVal);
-        
+        setNumber(adcStorage.ext);
     }
 }
 
@@ -70,8 +52,7 @@ void __attriubte__ ((interrupt(TIMER0_A0_VECTOR))) TIMER0_A0_ISR (void)
 #error Compiler not supported
 #endif
 {
-    ADC12CTL0 |= ADC12ENC | ADC12SC; // enable and start conversion
-    PJOUT ^= BIT7;
+    ADC12CTL0 |= ADC12ENC | ADC12SC; // enable and start conversion for the adc
 }
 
 // isr handler for RTC
@@ -90,12 +71,10 @@ void __attriubte__ ((interrupt(RTC_VECTOR))) RTC_ISR (void)
         case RTCIV_RTCOFIFG: break;
         
         case RTCIV_RTCRDYIFG:  // hits every second
+
         break;
         
         case RTCIV_RTCTEVIFG: // every minute
-            // PJOUT ^= BIT7; 
-            // minutesPassed++;
-            // setNumber(minutesPassed);
             
         break; 
            
@@ -126,16 +105,14 @@ void __attribute__ ((interrupt(ADC12_VECTOR))) ADC12_ISR (void)
         case ADC12IV_ADC12HIIFG:  break;        // Vector  6:  ADC12BHI
         case ADC12IV_ADC12LOIFG:  break;        // Vector  8:  ADC12BLO
         case ADC12IV_ADC12INIFG:  break;        // Vector 10:  ADC12BIN
-        case ADC12IV_ADC12IFG0:                 // Vector 12:  ADC12MEM0 Interrupt
-            // conv to voltage
-            extVal = ADC12MEM0;
-            tempVal = (uint16_t)((long)extVal * 0.061f);
-            // tempVal = (uint16_t)((long)extVal * 2.5 / (4096.0-1.0));
-        break;                                // Clear CPUOFF bit from 0(SR)
-
+        case ADC12IV_ADC12IFG0:   break;        // Vector 12:  ADC12MEM0
         case ADC12IV_ADC12IFG1:   break;        // Vector 14:  ADC12MEM1
         case ADC12IV_ADC12IFG2:   break;        // Vector 16:  ADC12MEM2
-        case ADC12IV_ADC12IFG3:   break;        // Vector 18:  ADC12MEM3
+        case ADC12IV_ADC12IFG3:   
+            adcStorage.ext = readExternalInput();
+            adcStorage.temp = readTemp();
+            adcStorage.vbat = readAVCC();
+        break;        // Vector 18:  ADC12MEM3
         case ADC12IV_ADC12IFG4:   break;        // Vector 20:  ADC12MEM4
         case ADC12IV_ADC12IFG5:   break;        // Vector 22:  ADC12MEM5
         case ADC12IV_ADC12IFG6:   break;        // Vector 24:  ADC12MEM6
