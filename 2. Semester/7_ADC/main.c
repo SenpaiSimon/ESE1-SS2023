@@ -107,12 +107,12 @@ void __attribute__ ((interrupt(ADC12_VECTOR))) ADC12_ISR (void)
         case ADC12IV_ADC12INIFG:  break;        // Vector 10:  ADC12BIN
         case ADC12IV_ADC12IFG0:   break;        // Vector 12:  ADC12MEM0
         case ADC12IV_ADC12IFG1:   break;        // Vector 14:  ADC12MEM1
-        case ADC12IV_ADC12IFG2:   break;        // Vector 16:  ADC12MEM2
-        case ADC12IV_ADC12IFG3:   
+        case ADC12IV_ADC12IFG2:   
             adcStorage.ext = readExternalInput();
             adcStorage.temp = readTemp();
             adcStorage.vbat = readAVCC();
-        break;        // Vector 18:  ADC12MEM3
+        break;        // Vector 16:  ADC12MEM2
+        case ADC12IV_ADC12IFG3:   break;        // Vector 18:  ADC12MEM3
         case ADC12IV_ADC12IFG4:   break;        // Vector 20:  ADC12MEM4
         case ADC12IV_ADC12IFG5:   break;        // Vector 22:  ADC12MEM5
         case ADC12IV_ADC12IFG6:   break;        // Vector 24:  ADC12MEM6

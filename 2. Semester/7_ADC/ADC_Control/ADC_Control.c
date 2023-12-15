@@ -40,7 +40,7 @@ void initADC() {
     // temperatur sens is MEM1
     ADC12MCTL1 |= ADC12INCH_30 | ADC12VRSEL_1;
     // vbat sens is MEM2
-    ADC12MCTL1 |= ADC12INCH_31 | ADC12VRSEL_1 | ADC12EOS; // signal that this is end of sequence with ADC12EOS
+    ADC12MCTL2 |= ADC12INCH_31 | ADC12VRSEL_1 | ADC12EOS; // signal that this is end of sequence with ADC12EOS
 
     while(!(REFCTL0 | REFGENRDY)); // wait for reference generator
 }
