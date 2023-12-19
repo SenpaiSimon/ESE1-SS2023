@@ -25,11 +25,11 @@ void initADC() {
     // CONFIG ADC12 ----------------------------------------------------------------
     // -----------------------------------------------------------------------------
     ADC12CTL0 = ADC12SHT0_4 | ADC12SHT1_4 | ADC12ON; // sample for 32 cycles -- 32uS at 1Mhz Clock
-    ADC12CTL1 = ADC12SSEL_3 | ADC12SHP; // smclk as source
+    ADC12CTL1 = ADC12SSEL_3 | ADC12SHP | ADC12CONSEQ_1; // smclk as source -- autoscan mode
     ADC12CTL2 |= ADC12RES_2; // 12 bit
     ADC12CTL3 |= ADC12TCMAP | ADC12BATMAP; // turn on internal sensors
     // ADC12IER0 |= ADC12IE0 | ADC12IE1 | ADC12IE2; // iinterrupts for all used channels
-    ADC12IER0 |= ADC12IE2; // iinterrupt only when last channel is done --> then convert all the results at once
+    ADC12IER0 |= ADC12IE2; // interrupt only when last channel is done --> then convert all the results at once
 
 
     // -----------------------------------------------------------------------------
